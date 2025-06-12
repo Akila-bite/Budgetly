@@ -1,0 +1,46 @@
+.transaction-table-container {
+  overflow-x: auto;
+  margin: 2rem 0;
+}
+
+.transaction-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.transaction-table th,
+.transaction-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.transaction-table th {
+  background-color: #f9f9f9;
+  font-weight: 600;
+}
+
+.transaction-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.income {
+  color: green;
+  font-weight: bold;
+}
+
+.expense {
+  color: crimson;
+  font-weight: bold;
+}
+
+.no-results {
+  text-align: center;
+  margin-top: 1rem;
+  color: #777;
+  font-size: 1rem;
+}
