@@ -60,17 +60,29 @@ export const updateTransaction = createAsyncThunk(
 // Slice
 const transactionSlice = createSlice({
   name: "transactions",
-  initialState: {
-    transactions: [],
-    loading: false,
-    error: null,
+ initialState: {
+  transactions: [],
+  loading: false,
+  error: null,
+  totals: {
+    income: 0,
+    expenses: 0,
+    balance: 0,
   },
+},
+
   reducers: {
     resetTransactionState: (state) => {
       state.loading = false;
       state.error = null;
     },
+
+      setTotals: (state, action) => {
+  state.totals = action.payload;
+},
   },
+
+
   extraReducers: (builder) => {
     builder
       // CREATE
@@ -121,6 +133,6 @@ const transactionSlice = createSlice({
   },
 });
 
-export const { resetTransactionState } = transactionSlice.actions;
+export const { resetTransactionState, setTotals } = transactionSlice.actions;
 export default transactionSlice.reducer;
 
