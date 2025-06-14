@@ -1,0 +1,64 @@
+.goals-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.goal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 30px;
+}
+
+.goal-form input,
+.goal-form select,
+.goal-form textarea,
+.goal-form button {
+  padding: 8px;
+  font-size: 14px;
+}
+
+.goal-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.goals-list {
+  list-style: none;
+  padding: 0;
+}
+
+.goal-item {
+  border: 1px solid #ccc;
+  padding: 15px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+}
+
+.progress-bar {
+  width: 100%;
+  background-color: #ddd;
+  height: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background-color: #4caf50;
+  border-radius: 5px;
+}
+
+.update-progress-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.update-progress-form input {
+  width: 120px;
+}
