@@ -93,7 +93,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api/users';
+const API_BASE_URL = 'https://budgetly-backend-jan0.onrender.com/api/users';
 
 // REGISTER USER
 export const registerUser = createAsyncThunk(

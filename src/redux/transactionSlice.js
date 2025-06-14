@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/transactions";
+const API_URL = "https://budgetly-backend-jan0.onrender.com/api/transactions";
 
 // Create transaction
 export const createTransaction = createAsyncThunk(
