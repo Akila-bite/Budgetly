@@ -14,11 +14,22 @@ export default function Header() {
           <Link className="nav-link" to="/">Home</Link>
         </li>
         <li className="nav-item">
-          <Link className="nav-link" to="/dashboard">Dashboard</Link>
+          <Link className="nav-link" to="/login">Login</Link>
+        </li>
+        <li className="nav-item">
+          <Link className="nav-link" to="/register">Register</Link>
         </li>
         <li className="nav-item">
           <Link className="nav-link" to="/analytics">Analytics</Link>
         </li>
+      
+        <li className="nav-item">
+          <Link className="nav-link" to="/goals">Goals</Link>
+        </li>
+
+         {/* <li className="nav-item">
+          <Link className="nav-link" to="/analytics">Analytics</Link>
+        </li> */}
 </ul>
 </nav>
     </header>

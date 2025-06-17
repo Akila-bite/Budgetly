@@ -1,0 +1,29 @@
+
+
+.dashboard-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #fff;
+}
+
+.dashboard-card.budget-card {
+  background-color: #1e293b; /* slate */
+}
+
+.dashboard-card.goals-card {
+  background: linear-gradient(to right, #3b82f6, #9333ea); /* blue-purple */
+}
+
+.dashboard-card.analytics-card {
+  background: linear-gradient(to right, #10b981, #0ea5e9); /* green-blue */
+}
+
+.dashboard-card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.dashboard-card-content {
+  flex: 1;
+}

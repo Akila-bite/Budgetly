@@ -4,6 +4,9 @@ import { Provider } from "react-redux";
 import { TransactionFilterProvider } from "./context/TransactionFilterContext";
 import Header from "./components/Header";
 import Home from "./pages/Home";
+import Goals from "./pages/Goals";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 export default function App() {
   return (
@@ -27,6 +30,9 @@ function AppContent() {
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/goals" element={<Goals />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </main>
 

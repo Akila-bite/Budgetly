@@ -22,6 +22,7 @@ const Goals = () => {
     const res = await axios.get("/api/goals", {
       headers: { Authorization: `Bearer ${token}` },
     });
+    console.log("Fetched goals data:", res.data);
     setGoals(res.data);
   };
 
@@ -66,7 +67,7 @@ const Goals = () => {
     );
 
     setUpdatedProgress((prev) => ({ ...prev, [goalId]: "" }));
-    fetchGoals();
+    fetchGoals(); // only this needed
   };
 
   return (
@@ -113,49 +114,51 @@ const Goals = () => {
       </div>
 
       <ul className="goals-list">
-        {goals
-          .filter(
-            (goal) =>
-              (!filterType || goal.goalType === filterType) &&
-              (!filterTimeframe || goal.timeframe === filterTimeframe)
-          )
-          .map((goal) => (
-            <li key={goal._id} className="goal-item">
-              <strong>{goal.title}</strong> – {goal.goalType} – {goal.category} – R{goal.targetAmount}
-              <p>{goal.description}</p>
+        {Array.isArray(goals) &&
+          goals
+            .filter(
+              (goal) =>
+                (!filterType || goal.goalType === filterType) &&
+                (!filterTimeframe || goal.timeframe === filterTimeframe)
+            )
+            .map((goal) => (
+              <li key={goal._id} className="goal-item">
+                <strong>{goal.title}</strong> – {goal.goalType} – {goal.category} – R{goal.targetAmount}
+                <p>{goal.description}</p>
 
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{
-                    width: `${Math.min((goal.currentAmount / goal.targetAmount) * 100, 100)}%`,
+                <div className="progress-bar">
+                  <div
+                    className="progress-fill"
+                    style={{
+                      width: `${Math.min((goal.currentAmount / goal.targetAmount) * 100, 100)}%`,
+                    }}
+                  ></div>
+                </div>
+                <small>{`Progress: R${goal.currentAmount} / R${goal.targetAmount}`}</small>
+
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleUpdateProgress(goal._id);
                   }}
-                ></div>
-              </div>
-              <small>{`Progress: R${goal.currentAmount} / R${goal.targetAmount}`}</small>
-
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleUpdateProgress(goal._id);
-                }}
-                className="update-progress-form"
-              >
-                <input
-                  type="number"
-                  placeholder="Update progress"
-                  value={updatedProgress[goal._id] || ""}
-                  onChange={(e) =>
-                    setUpdatedProgress({ ...updatedProgress, [goal._id]: e.target.value })
-                  }
-                />
-                <button type="submit">Update</button>
-              </form>
-            </li>
-          ))}
+                  className="update-progress-form"
+                >
+                  <input
+                    type="number"
+                    placeholder="Update progress"
+                    value={updatedProgress[goal._id] || ""}
+                    onChange={(e) =>
+                      setUpdatedProgress({ ...updatedProgress, [goal._id]: e.target.value })
+                    }
+                  />
+                  <button type="submit">Update</button>
+                </form>
+              </li>
+            ))}
       </ul>
     </div>
   );
 };
 
 export default Goals;
+
