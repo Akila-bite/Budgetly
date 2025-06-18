@@ -5,6 +5,7 @@
   flex-direction: column;
   justify-content: space-between;
   color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds slight shadow for depth */
 }
 
 .dashboard-card.budget-card {
@@ -27,3 +28,10 @@
 .dashboard-card-content {
   flex: 1;
 }
+
+.dashboard-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05); /* Subtle zoom effect on hover */
+  transition: transform 0.3s ease-in-out;
+}
+

@@ -68,7 +68,7 @@ import React, { useMemo, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setTotals } from "../redux/transactionSlice";
 
-const BudgetSummary = () => {
+const Budget = () => {
   const dispatch = useDispatch();
   const transactions = useSelector((state) => state.transactions.transactions);
 
@@ -119,5 +119,5 @@ const BudgetSummary = () => {
   );
 };
 
-export default BudgetSummary;
+export default Budget;
 
