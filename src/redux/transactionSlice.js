@@ -61,6 +61,7 @@ export const updateTransaction = createAsyncThunk(
 const transactionSlice = createSlice({
   name: "transactions",
  initialState: {
+   items: [],
   transactions: [],
   loading: false,
   error: null,

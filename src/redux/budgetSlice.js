@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "https://budgetly-backend-jan0.onrender.com/api/budget"; 
+const API_URL = "https://budgetly-backend-jan0.onrender.com/api/budget";
 
-// Async thunks
+// Thunks
 export const fetchBudget = createAsyncThunk("budget/fetch", async () => {
   const res = await axios.get(API_URL);
   return res.data;
@@ -24,29 +24,48 @@ export const deleteBudget = createAsyncThunk("budget/delete", async (id) => {
   return id;
 });
 
-const budgetlice = createSlice({
+const budgetSlice = createSlice({
   name: "budget",
   initialState: {
-    budget: [],
+    budget: [], // this should be a list if you're expecting multiple budgets
     loading: false,
     error: null,
   },
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchbudget.pending, (state) => {
+      // Fetch
+      .addCase(fetchBudget.pending, (state) => {
         state.loading = true;
       })
-      .addCase(fetchbudget.fulfilled, (state, action) => {
+      .addCase(fetchBudget.fulfilled, (state, action) => {
         state.loading = false;
         state.budget = action.payload;
       })
-      .addCase(fetchbudget.rejected, (state, action) => {
+      .addCase(fetchBudget.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message;
       })
-      // Repeat similar handlers for createBudget, updateBudget, deleteBudget
+
+      // Create
+      .addCase(createBudget.fulfilled, (state, action) => {
+        state.budget.push(action.payload);
+      })
+
+      // Update
+      .addCase(updateBudget.fulfilled, (state, action) => {
+        const index = state.budget.findIndex(b => b._id === action.payload._id);
+        if (index !== -1) {
+          state.budget[index] = action.payload;
+        }
+      })
+
+      // Delete
+      .addCase(deleteBudget.fulfilled, (state, action) => {
+        state.budget = state.budget.filter(b => b._id !== action.payload);
+      });
   },
 });
 
-export default budgetlice.reducer;
+export default budgetSlice.reducer;
+

@@ -1,10 +1,10 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useTransactionFilter } from "../context/TransactionFilterContext";
-import { deleteTransaction } from "../redux/transactionSlice"; // adjust path as needed
+import { deleteTransaction } from "../redux/transactionSlice"; 
 import "./TransactionList.css";
 
 const TransactionList = ({ onEdit }) => {
-  const { items } = useSelector((state) => state.transactions);
+  const items = useSelector((state) => state.transactions?.items || []);
   const dispatch = useDispatch();
   const { typeFilter, categoryFilter } = useTransactionFilter();
 
