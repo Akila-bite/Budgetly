@@ -4,17 +4,14 @@ import { useSelector, useDispatch } from "react-redux";
 import { ThemeContext } from "../context/ThemeContext";
 import { setUserType, setBudgetingStyle } from "../redux/slices/userPreferencesSlice";
 import { USER_TYPES, BUDGETING_STYLES } from "../constants/userOptions";
+import { toast } from "react-toastify";
 import "./Profile.css";
 
 const Profile = () => {
-  const { theme, toggleTheme } = useContext(ThemeContext); // handles dark/light mode switching
-
+  const { theme, toggleTheme } = useContext(ThemeContext);
   const dispatch = useDispatch();
-
-  // Getting the selected values from Redux state
   const { userType, budgetingStyle } = useSelector((state) => state.userPreferences);
 
-  // Backend-synced profile fields
   const [userData, setUserData] = useState({
     fullName: "",
     email: "",
@@ -22,45 +19,53 @@ const Profile = () => {
     currency: "ZAR",
   });
 
-  const [password, setPassword] = useState(""); // for changing password
+  const [originalData, setOriginalData] = useState(null); // for canceling edits
+  const [password, setPassword] = useState("");
+  const [editMode, setEditMode] = useState(false); // toggle for edit view
 
-  // Fetch user's current info from backend on mount
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const res = await axios.get("/api/users/me"); // replace with actual API
+        const res = await axios.get("/api/users/me");
         setUserData({
           fullName: res.data.fullName,
           email: res.data.email,
           incomeBracket: res.data.incomeBracket || "",
           currency: res.data.currency || "ZAR",
         });
+        setOriginalData(res.data); // store for cancel reset
       } catch (err) {
-        alert("Failed to load profile info.");
+        toast.error("Failed to load profile info.");
       }
     };
 
     fetchUserProfile();
   }, []);
 
-  // Update user details in the backend
   const handleSave = async () => {
     try {
-      await axios.put("/api/users/update", userData); // replace with actual API
-      alert("Profile updated successfully!");
+      await axios.put("/api/users/update", userData);
+      toast.success("Profile updated successfully!");
+      setOriginalData(userData); // update saved copy
+      setEditMode(false); // exit edit mode
     } catch (error) {
-      alert("Update failed.");
+      toast.error("Update failed.");
     }
   };
 
-  // Handle password update
+  const handleCancel = () => {
+    setUserData(originalData); // revert to original
+    setEditMode(false);
+    toast.info("Changes canceled.");
+  };
+
   const handlePasswordChange = async () => {
     try {
-      await axios.put("/api/users/change-password", { password }); // replace with actual API
-      alert("Password changed!");
+      await axios.put("/api/users/change-password", { password });
+      toast.success("Password changed!");
       setPassword("");
     } catch (err) {
-      alert("Password change failed.");
+      toast.error("Password change failed.");
     }
   };
 
@@ -68,16 +73,28 @@ const Profile = () => {
     <div className={`profile-container ${theme}`}>
       <h2 className="profile-heading">Your Profile</h2>
 
-      {/* Full Name */}
+      <div className="profile-edit-toggle">
+        {!editMode ? (
+          <button onClick={() => setEditMode(true)} className="profile-button primary">
+            Edit Profile
+          </button>
+        ) : (
+          <>
+            <button onClick={handleSave} className="profile-button primary">Save</button>
+            <button onClick={handleCancel} className="profile-button secondary">Cancel</button>
+          </>
+        )}
+      </div>
+
       <label className="profile-label">Full Name</label>
       <input
         name="fullName"
         value={userData.fullName}
         onChange={(e) => setUserData({ ...userData, fullName: e.target.value })}
         className="profile-input"
+        readOnly={!editMode}
       />
 
-      {/* Email Address */}
       <label className="profile-label">Email</label>
       <input
         type="email"
@@ -85,47 +102,48 @@ const Profile = () => {
         value={userData.email}
         onChange={(e) => setUserData({ ...userData, email: e.target.value })}
         className="profile-input"
+        readOnly={!editMode}
       />
 
-      {/* Password Change */}
       <label className="profile-label">Change Password</label>
       <input
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         className="profile-input"
+        placeholder="Enter new password"
       />
       <button onClick={handlePasswordChange} className="profile-button secondary">
         Change Password
       </button>
 
-      {/* Income Bracket */}
       <label className="profile-label">Income Bracket</label>
       <input
         name="incomeBracket"
         value={userData.incomeBracket}
         onChange={(e) => setUserData({ ...userData, incomeBracket: e.target.value })}
         className="profile-input"
+        readOnly={!editMode}
       />
 
-      {/* Currency Preference */}
       <label className="profile-label">Currency Preference</label>
       <select
         value={userData.currency}
         onChange={(e) => setUserData({ ...userData, currency: e.target.value })}
         className="profile-input"
+        disabled={!editMode}
       >
         <option value="ZAR">ZAR (R)</option>
         <option value="USD">USD ($)</option>
         <option value="EUR">EUR (€)</option>
       </select>
 
-      {/* User Type — stored in Redux */}
       <label className="profile-label">User Group / Type</label>
       <select
         value={userType}
         onChange={(e) => dispatch(setUserType(e.target.value))}
         className="profile-input"
+        disabled={!editMode}
       >
         {USER_TYPES.map((type) => (
           <option key={type} value={type}>
@@ -134,12 +152,12 @@ const Profile = () => {
         ))}
       </select>
 
-      {/* Budgeting Style — stored in Redux */}
       <label className="profile-label">Budgeting Style</label>
       <select
         value={budgetingStyle}
         onChange={(e) => dispatch(setBudgetingStyle(e.target.value))}
         className="profile-input"
+        disabled={!editMode}
       >
         {BUDGETING_STYLES.map((style) => (
           <option key={style} value={style}>
@@ -148,21 +166,16 @@ const Profile = () => {
         ))}
       </select>
 
-      {/* Theme toggle with context */}
       <div className="profile-theme-toggle">
         <span>Theme:</span>
         <button onClick={toggleTheme} className="profile-button toggle">
           {theme === "light" ? "Dark Mode" : "Light Mode"}
         </button>
       </div>
-
-      {/* Save backend data */}
-      <button onClick={handleSave} className="profile-button primary">
-        Save Changes
-      </button>
     </div>
   );
 };
 
 export default Profile;
+
 

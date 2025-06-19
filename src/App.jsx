@@ -12,6 +12,8 @@ import Goals from "./pages/Goals";
 import Budget from "./pages/Budget";
 import TransactionList from "./pages/TransactionList";
 import Analytics from "./pages/Analytics";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 export default function App() {
@@ -19,6 +21,7 @@ export default function App() {
     <Provider store={store}> {/* Wrap entire app with Redux store */}
        <TransactionFilterProvider>
        <ThemeProvider>
+        <ToastContainer />
      <Router>
             <AppContent />
       </Router>
