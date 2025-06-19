@@ -1,7 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { fetchCategories } from "../features/category/categorySlice";
 import "./Transaction.css";
 
 const Transaction = ({ onSubmit }) => {
+
+  const dispatch = useDispatch();
+  const { categories, loading } = useSelector((state) => state.categories);
+
+  useEffect(() => {
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
   const [formData, setFormData] = useState({
     amount: "",
     type: "expense",

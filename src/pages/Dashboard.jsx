@@ -3,17 +3,18 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardCard from "../components/DashboardCard";
+import "./dashboard.css";
 
 const Dashboard = () => {
   const navigate = useNavigate(); // Hook to navigate programmatically
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+    <div className="dashboard-container">
 
       {/* Budget Page Card */}
       <DashboardCard
         title="Budget"
-        size="large"
+        size="medium"
         customClass="budget-card"
         onClick={() => navigate("/budget")}
       >
@@ -43,7 +44,7 @@ const Dashboard = () => {
       {/* Analytics Page Card */}
       <DashboardCard
         title="Analytics"
-        size="large"
+        size="medium"
         customClass="analytics-card"
         onClick={() => navigate("/analytics")}
       >

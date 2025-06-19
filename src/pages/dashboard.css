@@ -1,0 +1,64 @@
+/* Container grid (already applied in Tailwind in your JSX, but in case you want to move away from Tailwind) */
+.dashboard-container {
+  display: grid;
+   grid-template-columns: repeat(2, 1fr); /* 2 columns */
+  column-gap: 1rem; /* space between the two columns (left/right) */
+row-gap: 0.5rem;   /* space between the two rows (top/bottom) */
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto; /* center the grid */
+}
+
+/* DashboardCard base styles */
+.dashboard-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: 250px;
+  /* Maintain a square shape */
+  aspect-ratio: 1 / 1;
+}
+
+/* Hover effect */
+.dashboard-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Title inside the card */
+.dashboard-card h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #4b0082; /* Indigo/blueviolet tone */
+}
+
+/* Description text */
+.dashboard-card p {
+  font-size: 1rem;
+  color: #444;
+  text-align: center;
+}
+
+/* Optional: different colors per card type if needed */
+.budget-card {
+  border-top: 6px solid #7b68ee; /* mediumslateblue */
+}
+
+.transactions-card {
+  border-top: 6px solid #ff6f61;
+}
+
+.goals-card {
+  border-top: 6px solid #20c997;
+}
+
+.analytics-card {
+  border-top: 6px solid #ffc107;
+}
