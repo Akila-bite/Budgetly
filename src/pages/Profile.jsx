@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { ThemeContext } from "../context/ThemeContext";
-import { setUserType, setBudgetingStyle } from "../redux/slices/userPreferencesSlice";
+import { setUserType, setBudgetingStyle } from "../redux/userPreferencesSlice";
 import { USER_TYPES, BUDGETING_STYLES } from "../constants/userOptions";
 import { toast } from "react-toastify";
 import "./Profile.css";
@@ -10,7 +10,11 @@ import "./Profile.css";
 const Profile = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
   const dispatch = useDispatch();
-  const { userType, budgetingStyle } = useSelector((state) => state.userPreferences);
+
+  // ✅ FIX: Avoid selector re-evaluation warning
+  const user = useSelector((state) => state.user || {});
+  const userType = user.userType || "";
+  const budgetingStyle = user.budgetingStyle || "";
 
   const [userData, setUserData] = useState({
     fullName: "",
@@ -19,9 +23,10 @@ const Profile = () => {
     currency: "ZAR",
   });
 
-  const [originalData, setOriginalData] = useState(null); // for canceling edits
+  const [originalData, setOriginalData] = useState(null);
   const [password, setPassword] = useState("");
-  const [editMode, setEditMode] = useState(false); // toggle for edit view
+  const [editMode, setEditMode] = useState(false);
+  const [loading, setLoading] = useState(true); // ✅ loader state
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -33,9 +38,11 @@ const Profile = () => {
           incomeBracket: res.data.incomeBracket || "",
           currency: res.data.currency || "ZAR",
         });
-        setOriginalData(res.data); // store for cancel reset
+        setOriginalData(res.data);
       } catch (err) {
         toast.error("Failed to load profile info.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -46,15 +53,15 @@ const Profile = () => {
     try {
       await axios.put("/api/users/update", userData);
       toast.success("Profile updated successfully!");
-      setOriginalData(userData); // update saved copy
-      setEditMode(false); // exit edit mode
+      setOriginalData(userData);
+      setEditMode(false);
     } catch (error) {
       toast.error("Update failed.");
     }
   };
 
   const handleCancel = () => {
-    setUserData(originalData); // revert to original
+    setUserData(originalData);
     setEditMode(false);
     toast.info("Changes canceled.");
   };
@@ -68,6 +75,8 @@ const Profile = () => {
       toast.error("Password change failed.");
     }
   };
+
+  if (loading) return <p className="profile-loading">Loading profile...</p>;
 
   return (
     <div className={`profile-container ${theme}`}>
@@ -105,17 +114,25 @@ const Profile = () => {
         readOnly={!editMode}
       />
 
-      <label className="profile-label">Change Password</label>
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="profile-input"
-        placeholder="Enter new password"
-      />
-      <button onClick={handlePasswordChange} className="profile-button secondary">
-        Change Password
-      </button>
+      {/* ✅ Wrap password input in a form */}
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handlePasswordChange();
+        }}
+      >
+        <label className="profile-label">Change Password</label>
+        <input
+          type="password"
+          value={password || ""} // ✅ Ensure controlled input
+          onChange={(e) => setPassword(e.target.value)}
+          className="profile-input"
+          placeholder="Enter new password"
+        />
+        <button type="submit" className="profile-button secondary">
+          Change Password
+        </button>
+      </form>
 
       <label className="profile-label">Income Bracket</label>
       <input
@@ -177,5 +194,6 @@ const Profile = () => {
 };
 
 export default Profile;
+
 
 

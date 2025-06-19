@@ -5,6 +5,7 @@ import transactionReducer from './transactionSlice';
 import goalsReducer from './goalSlice';
 import budgetReducer from './budgetSlice';
 import categoryReducer from './categorySlice';
+import userPreferencesReducer from './userPreferencesSlice';
 
 export const store = configureStore({
   reducer: {
@@ -13,5 +14,6 @@ export const store = configureStore({
     goals: goalsReducer,
     budget: budgetReducer,
     categories: categoryReducer,
+     user: userPreferencesReducer,
   },
 });
