@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchCategories } from "../features/category/categorySlice";
+import { fetchCategories } from "../redux/categorySlice";
 import "./Transaction.css";
 
 const Transaction = ({ onSubmit }) => {

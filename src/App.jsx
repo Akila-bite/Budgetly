@@ -13,6 +13,7 @@ import Budget from "./pages/Budget";
 import TransactionList from "./pages/TransactionList";
 import Analytics from "./pages/Analytics";
 import Profile from "./pages/Profile";
+import Transaction from "./components/Transaction";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -49,6 +50,7 @@ function AppContent() {
           <Route path="/goals" element={<Goals />} />
          <Route path="/analytics" element={<Analytics />} />
          <Route path="/profile" element={<Profile />} />
+         <Route path="/transaction" element={<Transaction/>} />
         </Routes>
       </main>
 
