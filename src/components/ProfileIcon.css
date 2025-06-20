@@ -1,4 +1,4 @@
-/* ProfileIcon.css */
+
 
 .profile-icon-link {
   display: flex;
@@ -7,22 +7,24 @@
   text-decoration: none;
   color: inherit;
   margin-right: auto; /* push it to far left in navbar */
+  margin-left: 20px;
 }
 
 .profile-avatar,
 .profile-placeholder-icon {
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
 }
 
 .profile-placeholder-icon {
-  font-size: 40px;
-  color: gray;
+  font-size: 60px;
+  color: white;
 }
 
 .profile-name {
-  font-size: 0.75rem;
+  font-size: 1rem;
   margin-top: 2px;
+  color: white;
 }

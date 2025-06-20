@@ -188,7 +188,7 @@ const Profile = () => {
         <button onClick={toggleTheme} className="profile-button toggle">
           {theme === "light" ? "Dark Mode" : "Light Mode"}
         </button>
-      </div>
+      </div> 
     </div>
   );
 };
