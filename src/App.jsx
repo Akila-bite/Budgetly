@@ -3,6 +3,7 @@ import { store} from "./redux/store"; // Import Redux store
 import { Provider } from "react-redux";
 import { TransactionFilterProvider } from "./context/TransactionFilterContext";
 import { ThemeProvider } from "./context/ThemeContext";
+import "./index.css";
 import Header from "./components/Header";
 import Home from "./pages/Home";
 import Login from "./pages/Login";

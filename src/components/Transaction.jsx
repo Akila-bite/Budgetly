@@ -33,8 +33,13 @@ const Transaction = ({ onSubmit }) => {
   };
 
   return (
+
+    <div className="transaction-page">
+      <div className="transaction-background"></div>
+
+      <div className="transaction-content">
     <form className="transaction-form" onSubmit={handleSubmit}>
-      <h2>Add Transaction</h2>
+      <h2>New Transaction</h2>
 
       <label>
         Amount:
@@ -93,6 +98,8 @@ const Transaction = ({ onSubmit }) => {
 
       <button type="submit">Add Transaction</button>
     </form>
+    </div>
+    </div>
   );
 };
 
