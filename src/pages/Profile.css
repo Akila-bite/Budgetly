@@ -105,3 +105,19 @@
   align-items: center;
   margin-top: 1rem;
 }
+
+
+.category-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+.category-table th,
+.category-table td {
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 0.5rem;
+  text-align: left;
+}
+.category-table th {
+  background-color: rgba(0,0,0,0.05);
+}

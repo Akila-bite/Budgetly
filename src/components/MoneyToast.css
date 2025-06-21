@@ -1,0 +1,33 @@
+.money-toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: bold;
+  font-size: 16px;
+  animation: bounce-in 0.4s ease;
+}
+
+.money-icon {
+  font-size: 24px;
+  animation: cash-drop 1s infinite alternate;
+}
+
+@keyframes cash-drop {
+  0% {
+    transform: rotate(-10deg) translateY(0px);
+  }
+  100% {
+    transform: rotate(10deg) translateY(5px);
+  }
+}
+
+@keyframes bounce-in {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

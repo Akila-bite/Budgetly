@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import "./Goals.css"; // Importing component-specific styles
+import { toast } from 'react-toastify';
+import MoneyToast from '../components/MoneyToast'; 
+import "./Goals.css"; 
 
 const Goals = () => {
   // ========== STATE ==========
@@ -26,7 +28,7 @@ const Goals = () => {
   // Tracks individual progress updates for each goal
   const [updatedProgress, setUpdatedProgress] = useState({});
 
-  // ========== FETCH GOALS FROM BACKEND ==========
+  
 
   // Fetches all goals belonging to the logged-in user
   const fetchGoals = async () => {
@@ -60,6 +62,9 @@ const Goals = () => {
     await axios.post("/api/goals", formData, {
       headers: { Authorization: `Bearer ${token}` },
     });
+
+     toast.success(<MoneyToast message="Goal added successfully!" />);
+
 
     fetchGoals(); // Refresh list after adding
     // Reset the form

@@ -23,11 +23,20 @@ export default function App() {
     <Provider store={store}> {/* Wrap entire app with Redux store */}
        <TransactionFilterProvider>
        
-        <ToastContainer />
+        
      <Router>
             <AppContent />
       </Router>
-    
+    <ToastContainer   position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light" />
 
       </TransactionFilterProvider>
 
