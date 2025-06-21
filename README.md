@@ -11,7 +11,7 @@
 
 ## 🌐 Deployment
 
-**Live App:** *\[deployed URL here]*
+**Live App:** *https://budgetly-chi.vercel.app/*
 
 ---
 
