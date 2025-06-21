@@ -1,30 +1,82 @@
+.page-title {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  font-weight: 600;
+  font-family: 'Titillium Web', sans-serif;
+}
+
 .goals-container {
-  max-width: 700px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+}
+
+.goals-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.goal-form-card,
+.goals-list-card {
+  /* background: #ffffff; */
+  background: linear-gradient(to right, #3b82f6, #9333ea); /* Blue-purple gradient */;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.goal-form-card h3,
+.goals-list-card h3 {
+  margin-bottom: 1rem;
+  font-family: 'Titillium Web', sans-serif;
+  font-size: 1.5rem;
+  color: #333;
 }
 
 .goal-form {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 30px;
 }
 
 .goal-form input,
 .goal-form select,
 .goal-form textarea,
 .goal-form button {
-  padding: 8px;
+  padding: 10px;
   font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-family: 'Titillium Web', sans-serif;
+}
+
+.goal-form button {
+  background-color: #4caf50;
+  color: white;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.goal-form button:hover {
+  background-color: #388e3c;
 }
 
 .goal-filters {
+  margin-top: 20px;
   display: flex;
-  align-items: center;
   gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 20px;
+  align-items: center;
+}
+
+.goal-filters label {
+  font-weight: 500;
 }
 
 .goals-list {
@@ -33,15 +85,23 @@
 }
 
 .goal-item {
-  border: 1px solid #ccc;
+  border: 1px solid #eee;
   padding: 15px;
   margin-bottom: 20px;
-  border-radius: 5px;
+  border-radius: 10px;
+  background: #fafafa;
+}
+
+.goal-item strong {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+  font-weight: 600;
 }
 
 .progress-bar {
   width: 100%;
-  background-color: #ddd;
+  background-color: #e0e0e0;
   height: 10px;
   border-radius: 5px;
   margin: 10px 0;
@@ -51,6 +111,7 @@
   height: 100%;
   background-color: #4caf50;
   border-radius: 5px;
+  transition: width 0.3s ease;
 }
 
 .update-progress-form {
@@ -61,4 +122,20 @@
 
 .update-progress-form input {
   width: 120px;
+  padding: 6px;
 }
+
+.update-progress-form button {
+  background-color: #2196f3;
+  color: white;
+  font-weight: 600;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.update-progress-form button:hover {
+  background-color: #1976d2;
+}
+

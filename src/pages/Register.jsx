@@ -19,6 +19,9 @@ const Register = () => {
   };
 
   return (
+    <>
+     <div className="register-background" />
+     <div className="overlay"></div> {/* glass effect layer */}
     <div className="register-container">
       <form className="register-form" onSubmit={handleSubmit}>
         <h2 className="register-title">Register</h2>
@@ -63,6 +66,7 @@ const Register = () => {
 
       </form>
     </div>
+    </>
   );
 };
 

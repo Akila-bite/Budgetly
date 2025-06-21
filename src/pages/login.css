@@ -1,20 +1,30 @@
-
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Segoe UI', sans-serif;
+.login-background {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(to right, #3b82f6, #9333ea);
+  z-index: -1;
 }
 
-.login-container {
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.2); /* optional tint */
+  backdrop-filter: blur(10px); /* blur effect */
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 0;
+  pointer-events: none; /* so it doesn't block clicks or scroll */
+}
+
+ .login-container {
+   
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: url('/images/login-bg.jpg'); /* ✅ Place image in public/images/ */
   background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
-}
+   }
+
 
 .login-form {
   background-color: rgba(255, 255, 255, 0.92);

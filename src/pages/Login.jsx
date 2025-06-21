@@ -19,6 +19,9 @@ const Login = () => {
   };
 
   return (
+    <>
+    <div className="login-background" />
+     <div className="overlay"></div> {/* glass effect layer */}
     <div className="login-container">
       <form className="login-form" onSubmit={handleSubmit}>
         <h2 className="login-title">Login</h2>
@@ -54,6 +57,7 @@ const Login = () => {
 
       </form>
     </div>
+  </>
   );
 };
 

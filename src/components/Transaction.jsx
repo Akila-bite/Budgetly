@@ -42,7 +42,7 @@ const Transaction = ({ onSubmit }) => {
       <h2>New Transaction</h2>
 
       <label>
-        Amount:
+        <strong>Amount:</strong>
         <input
           type="number"
           name="amount"
@@ -53,7 +53,7 @@ const Transaction = ({ onSubmit }) => {
       </label>
 
       <label>
-        Type:
+        <strong>Type:</strong> 
         <select name="type" value={formData.type} onChange={handleChange} required>
           <option value="income">Income</option>
           <option value="expense">Expense</option>
@@ -61,7 +61,7 @@ const Transaction = ({ onSubmit }) => {
       </label>
 
       <label>
-        Category:
+        <strong>Category:</strong> 
         <select name="category" value={formData.category} onChange={handleChange} required>
           <option value="food">Food</option>
           <option value="entertainment">Entertainment</option>
@@ -77,7 +77,7 @@ const Transaction = ({ onSubmit }) => {
       </label>
 
       <label>
-        Description:
+        <strong>Description:</strong> 
         <input
           type="text"
           name="description"
@@ -87,7 +87,7 @@ const Transaction = ({ onSubmit }) => {
       </label>
 
       <label>
-        Date:
+        <strong>Date:</strong>
         <input
           type="date"
           name="date"

@@ -1,11 +1,21 @@
-import React from "react";
+import React , { useState } from "react";
 import { Link } from "react-router-dom";
 import ProfileIcon from "./ProfileIcon";
 import { useSelector } from "react-redux";
+// import { FaOutlineChartLine } from "react-icons/fa";
+import { AiOutlineLineChart } from "react-icons/ai";
+
 import "./header.css";
 
 export default function Header() {
    const { isLoggedIn, user } = useSelector((state) => state.auth);
+
+   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+const toggleMenu = () => {
+  setIsMenuOpen((prev) => !prev);
+};
+
 
   
   return (
@@ -16,7 +26,17 @@ export default function Header() {
         avatarUrl={user?.avatarUrl}
       />
   
-    <nav className="navbar">
+     <div className="brand-logo">
+      <span className="brand-name">Budgetly</span>
+      <AiOutlineLineChart className="money-icon" />
+    </div>
+    
+      <button className="menu-toggle" onClick={toggleMenu}>
+      ☰ {/* hamburger menu icon */}
+    </button>
+
+
+    <nav className={`navbar ${isMenuOpen ? "open" : ""}`}>
   
    
       <ul className= "nav-links">

@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { useSelector, useDispatch } from "react-redux";
-import { ThemeContext } from "../context/ThemeContext";
+import { useSelector} from "react-redux";
 import { setUserType, setBudgetingStyle } from "../redux/userPreferencesSlice";
 import { USER_TYPES, BUDGETING_STYLES } from "../constants/userOptions";
 import { toast } from "react-toastify";
 import "./Profile.css";
 
 const Profile = () => {
-  const { theme, toggleTheme } = useContext(ThemeContext);
-  const dispatch = useDispatch();
+
 
   // ✅ FIX: Avoid selector re-evaluation warning
   const user = useSelector((state) => state.user || {});
@@ -79,7 +77,10 @@ const Profile = () => {
   if (loading) return <p className="profile-loading">Loading profile...</p>;
 
   return (
-    <div className={`profile-container ${theme}`}>
+   <div className="profile-page">
+    <div className="profile-background" />
+    <div className="overlay"></div> {/* glass effect layer */}
+     <div className="profile-container">
       <h2 className="profile-heading">Your Profile</h2>
 
       <div className="profile-edit-toggle">
@@ -183,12 +184,7 @@ const Profile = () => {
         ))}
       </select>
 
-      <div className="profile-theme-toggle">
-        <span>Theme:</span>
-        <button onClick={toggleTheme} className="profile-button toggle">
-          {theme === "light" ? "Dark Mode" : "Light Mode"}
-        </button>
-      </div> 
+    </div>
     </div>
   );
 };

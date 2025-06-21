@@ -13,6 +13,7 @@
 .analytics-card {
   background: #ffffff;
   border-radius: 1rem;
+  border-top: 8px solid #58165a;
   padding: 1.5rem;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
 }

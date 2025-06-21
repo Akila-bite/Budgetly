@@ -1,13 +1,39 @@
-/* Profile.css */
+
+
+.profile-page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+
+.profile-background {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(to right, #3b82f6, #9333ea);
+  z-index: -1;
+}
+
+/* Overlay that sits above background but behind content */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.2); /* optional tint */
+  backdrop-filter: blur(10px); /* blur effect */
+  -webkit-backdrop-filter: blur(10px);
+  z-index: -1;
+  pointer-events: none; /* so it doesn't block clicks or scroll */
+}
+
+
 
 .profile-container {
+  position: relative;
+  z-index: 1;
   max-width: 600px;
   margin: 2rem auto;
-  padding: 2rem;
-  border-radius: 10px;
-  background-color: #ffffff;
+  background-color: none;
   color: #333;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .profile-container.dark {
@@ -52,25 +78,25 @@
 }
 
 .profile-button.primary {
-  background-color: #00bfa5;
+  background-color: #58165a;
   color: white;
 }
 
 .profile-button.secondary {
-  background-color: #4b4b4b;
+  background-color: rgb(4, 4, 72);
   color: white;
   margin-bottom: 1rem;
 }
 
 .profile-button.toggle {
   background-color: transparent;
-  border: 2px solid #00bfa5;
-  color: #00bfa5;
+  border: 2px solid #58165a;;
+  color: #58165a;;
   margin-left: 0.5rem;
 }
 
 .profile-button.toggle:hover {
-  background-color: #00bfa5;
+  background-color: #58165a;;
   color: white;
 }
 
