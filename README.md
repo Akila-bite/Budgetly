@@ -1,6 +1,5 @@
 # React + Vite
 
-Here's a clean and concise **README.md** draft for your **Budgetly** project, with all the key technical features and highlights you mentioned:
 
 ---
 
