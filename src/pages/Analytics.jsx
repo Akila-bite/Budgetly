@@ -1,89 +1,201 @@
-
 import React from "react";
+import {useBudgetAnalytics,useGoalAnalytics,useTransactionAnalytics,useSpendingTrends,} from "../analytics/useAnalytics";
 import { useSelector } from "react-redux";
-import { LineChart, Line, PieChart, Pie, Tooltip, XAxis, YAxis, Legend, ResponsiveContainer } from "recharts";
+import "./Analytics.css"; // Custom CSS file
+
+// Recharts imports for charts
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  LineChart,
+  Line,
+  Legend,
+} from "recharts";
 
 const Analytics = () => {
-  const transactions = useSelector((state) => state.transactions.items);
-  const income = useSelector((state) => state.transactions.totalIncome);
-  const expenses = useSelector((state) => state.transactions.totalExpenses);
-  const balance = income - expenses;
+  // Fetch goals from Redux store
+  const goals = useSelector((state) => state.goals.goals);
 
-  const monthlyTrends = [
-    { month: "Jan", income: 4000, expenses: 2500 },
-    { month: "Feb", income: 4200, expenses: 2700 },
-    { month: "Mar", income: 4100, expenses: 3200 },
-    { month: "Apr", income: 4300, expenses: 3100 },
-  ];
+  // Hook for general budget insights (income, expenses, etc.)
+  const {
+    income,
+    expenses,
+    balance,
+    savings,
+    savingsRate,
+    selectedMonth,
+    availableMonths,
+  } = useBudgetAnalytics();
 
-  const categoryBreakdown = [
-    { name: "Food", value: 900 },
-    { name: "Transport", value: 400 },
-    { name: "Entertainment", value: 300 },
-    { name: "Utilities", value: 600 },
-  ];
+  // Hook for analyzing savings goals
+  const { goalInsights, totals } = useGoalAnalytics(goals);
 
-  const savingsRate = ((income - expenses) / income) * 100;
+  // Hook for analyzing transactions (weekly/monthly/category)
+  const {
+    totalIncome,
+    totalExpenses,
+    categoryBarChartData,
+    monthlyTrendData,
+    weeklyTrendData,
+    predictedMonthlySpending,
+  } = useTransactionAnalytics();
+
+  // Hook for spending trends over time (actual vs predicted)
+  const { data: spendingTrends } = useSpendingTrends();
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Analytics Overview</h1>
+    <div className="analytics-container">
+      {/* 📊 Budget Overview */}
+      <section className="analytics-card">
+        <h2>Budget Summary ({selectedMonth})</h2>
+        <ul>
+          <li>Income: R{income}</li>
+          <li>Expenses: R{expenses}</li>
+          <li>Savings: R{savings}</li>
+          <li>Balance: R{balance}</li>
+          <li>Savings Rate: {savingsRate}%</li>
+        </ul>
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart
+            data={[
+              { name: "Income", value: +income },
+              { name: "Expenses", value: +expenses },
+              { name: "Savings", value: +savings },
+              { name: "Balance", value: +balance },
+            ]}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="value" fill="#8884d8" />
+          </BarChart>
+        </ResponsiveContainer>
+      </section>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <SummaryCard title="Total Income" value={`R${income}`} />
-        <SummaryCard title="Total Expenses" value={`R${expenses}`} />
-        <SummaryCard title="Current Balance" value={`R${balance}`} />
-        <SummaryCard title="Savings Rate" value={`${savingsRate.toFixed(1)}%`} />
-      </div>
+      {/* 🏁 Goal Progress */}
+      <section className="analytics-card">
+        <h2>Savings Goals</h2>
+        <ul>
+          {goalInsights.map((goal) => (
+            <li key={goal._id}>
+              {goal.title}: {goal.progressPercent.toFixed(1)}% (
+              R{goal.currentAmount}/{goal.targetAmount})
+            </li>
+          ))}
+        </ul>
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart
+            data={goalInsights.map((g) => ({
+              name: g.title,
+              progress: +g.progressPercent,
+            }))}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="name" />
+            <YAxis unit="%" />
+            <Tooltip />
+            <Bar dataKey="progress" fill="#82ca9d" />
+          </BarChart>
+        </ResponsiveContainer>
+      </section>
 
-      {/* Trends */}
-      <h2 className="text-xl font-semibold mb-2">Monthly Trends</h2>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={monthlyTrends}>
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="income" stroke="#4ade80" />
-          <Line type="monotone" dataKey="expenses" stroke="#f87171" />
-        </LineChart>
-      </ResponsiveContainer>
+      {/* 🍔 Category Breakdown */}
+      <section className="analytics-card">
+        <h2>Spending by Category</h2>
+        <ResponsiveContainer width="100%" height={250}>
+          <BarChart data={categoryBarChartData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="category" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="amount" fill="#ffc658" />
+          </BarChart>
+        </ResponsiveContainer>
+      </section>
 
-      {/* Category Breakdown */}
-      <h2 className="text-xl font-semibold mt-8 mb-2">Spending by Category</h2>
-      <ResponsiveContainer width="100%" height={300}>
-        <PieChart>
-          <Pie
-            data={categoryBreakdown}
-            dataKey="value"
-            nameKey="name"
-            outerRadius={100}
-            fill="#60a5fa"
-            label
-          />
-          <Tooltip />
-        </PieChart>
-      </ResponsiveContainer>
+      {/* 📆 Weekly Trends */}
+      <section className="analytics-card">
+        <h2>Weekly Spending</h2>
+        <ResponsiveContainer width="100%" height={200}>
+          <LineChart data={weeklyTrendData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip />
+            <Line type="monotone" dataKey="amount" stroke="#8884d8" />
+          </LineChart>
+        </ResponsiveContainer>
+      </section>
 
-      {/* Forecasting Example */}
-      <div className="mt-8 bg-blue-50 p-4 rounded-lg shadow">
-        <h2 className="text-lg font-semibold mb-2">Trend Prediction</h2>
+      {/* 🔮 Monthly Forecast */}
+      <section className="analytics-card">
+        <h2>Monthly Spending Forecast</h2>
         <p>
-          Based on your current spending rate, you are projected to spend approximately <strong>R3200</strong> this month.
+          Total so far: R{totalExpenses} | Predicted: R{predictedMonthlySpending}
         </p>
-        <p className="text-sm text-gray-500 mt-1">* This is a basic forecast. More accurate predictions coming soon.</p>
-      </div>
+        <ResponsiveContainer width="100%" height={200}>
+          <BarChart
+            data={[
+              { label: "Spent", value: totalExpenses },
+              { label: "Forecast", value: predictedMonthlySpending },
+            ]}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="label" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="value" fill="#ff7f50" />
+          </BarChart>
+        </ResponsiveContainer>
+      </section>
+
+      {/* 📈 Spending Trends Over Time (Actual vs Predicted) */}
+      <section className="analytics-card full-width">
+        <h2>Spending Trends & Forecast</h2>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={spendingTrends}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="label" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            {/* Actual Spending Line */}
+            <Line
+              type="monotone"
+              dataKey="amount"
+              stroke="#8884d8"
+              dot={false}
+              strokeWidth={2}
+              name="Actual"
+              isAnimationActive={false}
+              data={spendingTrends.filter((d) => !d.isPrediction)}
+            />
+            {/* Predicted Spending Line */}
+            <Line
+              type="monotone"
+              dataKey="amount"
+              stroke="#82ca9d"
+              strokeDasharray="5 5"
+              dot={false}
+              strokeWidth={2}
+              name="Predicted"
+              isAnimationActive={false}
+              data={spendingTrends.filter((d) => d.isPrediction)}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </section>
     </div>
   );
 };
 
-const SummaryCard = ({ title, value }) => (
-  <div className="bg-white rounded-lg shadow p-4">
-    <h3 className="text-sm text-gray-600">{title}</h3>
-    <p className="text-lg font-bold">{value}</p>
-  </div>
-);
-
 export default Analytics;
+
+
 

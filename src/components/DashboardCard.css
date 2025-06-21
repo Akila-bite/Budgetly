@@ -16,9 +16,11 @@
   background: linear-gradient(to right, #3b82f6, #9333ea); /* blue-purple */
 }
 
-.dashboard-card.analytics-card {
-  background: linear-gradient(to right, #10b981, #0ea5e9); /* green-blue */
+.dashboard-card.profile-card {
+  background: linear-gradient(to right, #3b82f6, #9333ea); /* blue-purple */
 }
+
+
 
 .dashboard-card-title {
   font-size: 1.2rem;

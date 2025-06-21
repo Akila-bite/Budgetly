@@ -50,6 +50,15 @@ const Dashboard = () => {
       >
         <p>Visualize your spending and saving trends.</p>
       </DashboardCard>
+      <DashboardCard
+        title="Profile"
+        size="medium"
+        customClass="profile-card"
+        onClick={() => navigate("/profile")}
+      >
+        <p>Update your prefrences.</p>
+      </DashboardCard>
+
 
     </div>
   );

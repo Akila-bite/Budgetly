@@ -1,0 +1,30 @@
+/* src/styles/Analytics.css */
+
+/* Main grid container */
+.analytics-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+  background-color: #f9f9f9;
+}
+
+/* Card style for each section */
+.analytics-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Allow certain graphs like SpendingTrendsChart to stretch full width */
+.analytics-card.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Optional: make h2 smaller and cleaner */
+.analytics-card h2 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}

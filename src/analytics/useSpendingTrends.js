@@ -1,44 +1,71 @@
-import React from "react";
-import { useSpendingTrends } from "../hooks/useSpendingTrends";
-import {LineChart,Line,XAxis,YAxis,Tooltip,CartesianGrid,ResponsiveContainer,Legend} from "recharts";
 
-const SpendingTrendsChart = () => {
-  const { data } = useSpendingTrends();
 
-  return (
-    <div className="bg-white shadow p-4 rounded-xl my-6">
-      <h3 className="text-xl font-semibold mb-4">Spending Trends & Forecast</h3>
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="label" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line
-            type="monotone"
-            dataKey="amount"
-            stroke="#8884d8"
-            dot={false}
-            name="Actual"
-            isAnimationActive={false}
-            strokeWidth={2}
-          />
-          <Line
-            type="monotone"
-            dataKey="amount"
-            stroke="#82ca9d"
-            strokeDasharray="5 5"
-            data={data.filter((d) => d.isPrediction)}
-            name="Predicted"
-            dot={false}
-            isAnimationActive={false}
-            strokeWidth={2}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </div>
-  );
+import { useSelector } from "react-redux";
+import { useMemo } from "react";
+
+// Helper: Format a Date to "MMM YYYY" (e.g., "Jun 2025")
+const formatMonthLabel = (date) =>
+  date.toLocaleString("default", { month: "short", year: "numeric" });
+
+const useSpendingTrends = () => {
+  const { transactions } = useSelector((state) => state.transactions);
+
+  const data = useMemo(() => {
+    const monthlyTotals = {};
+    const today = new Date();
+
+    // Group past transactions by month
+    transactions.forEach((tx) => {
+      if (tx.type === "expense") {
+        const txDate = new Date(tx.date);
+        const monthKey = `${txDate.getFullYear()}-${txDate.getMonth()}`;
+        const label = formatMonthLabel(txDate);
+
+        if (!monthlyTotals[monthKey]) {
+          monthlyTotals[monthKey] = { label, amount: 0 };
+        }
+
+        monthlyTotals[monthKey].amount += tx.amount;
+      }
+    });
+
+    // Sort by date (earliest to latest)
+    const sorted = Object.entries(monthlyTotals)
+      .sort(([a], [b]) => new Date(a) - new Date(b))
+      .map(([_, val]) => ({
+        ...val,
+        amount: parseFloat(val.amount.toFixed(2)),
+        isPrediction: false,
+      }));
+
+    // Generate a basic forecast for next 3 months (optional)
+    const numPastMonths = sorted.length;
+    if (numPastMonths >= 2) {
+      const lastMonthAmount = sorted[numPastMonths - 1].amount;
+      const prevMonthAmount = sorted[numPastMonths - 2].amount;
+
+      const growthRate = lastMonthAmount - prevMonthAmount;
+
+      const lastDate = new Date();
+      lastDate.setMonth(lastDate.getMonth() + 1); // start predictions next month
+
+      for (let i = 0; i < 3; i++) {
+        const futureDate = new Date(lastDate.getFullYear(), lastDate.getMonth() + i);
+        const predictedAmount = lastMonthAmount + growthRate * (i + 1);
+
+        sorted.push({
+          label: formatMonthLabel(futureDate),
+          amount: parseFloat(predictedAmount.toFixed(2)),
+          isPrediction: true,
+        });
+      }
+    }
+
+    return sorted;
+  }, [transactions]);
+
+  return { data };
 };
 
-export default SpendingTrendsChart;
+export default useSpendingTrends;
+
