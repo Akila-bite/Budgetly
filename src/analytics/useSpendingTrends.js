@@ -1,20 +1,17 @@
-
-
 import { useSelector } from "react-redux";
 import { useMemo } from "react";
 
-// Helper: Format a Date to "MMM YYYY" (e.g., "Jun 2025")
 const formatMonthLabel = (date) =>
   date.toLocaleString("default", { month: "short", year: "numeric" });
 
 const useSpendingTrends = () => {
-  const { transactions } = useSelector((state) => state.transactions);
+  // Changed here:
+  const { items: transactions } = useSelector((state) => state.transaction);
 
   const data = useMemo(() => {
     const monthlyTotals = {};
     const today = new Date();
 
-    // Group past transactions by month
     transactions.forEach((tx) => {
       if (tx.type === "expense") {
         const txDate = new Date(tx.date);
@@ -29,7 +26,6 @@ const useSpendingTrends = () => {
       }
     });
 
-    // Sort by date (earliest to latest)
     const sorted = Object.entries(monthlyTotals)
       .sort(([a], [b]) => new Date(a) - new Date(b))
       .map(([_, val]) => ({
@@ -38,7 +34,6 @@ const useSpendingTrends = () => {
         isPrediction: false,
       }));
 
-    // Generate a basic forecast for next 3 months (optional)
     const numPastMonths = sorted.length;
     if (numPastMonths >= 2) {
       const lastMonthAmount = sorted[numPastMonths - 1].amount;
@@ -47,7 +42,7 @@ const useSpendingTrends = () => {
       const growthRate = lastMonthAmount - prevMonthAmount;
 
       const lastDate = new Date();
-      lastDate.setMonth(lastDate.getMonth() + 1); // start predictions next month
+      lastDate.setMonth(lastDate.getMonth() + 1);
 
       for (let i = 0; i < 3; i++) {
         const futureDate = new Date(lastDate.getFullYear(), lastDate.getMonth() + i);
@@ -68,4 +63,5 @@ const useSpendingTrends = () => {
 };
 
 export default useSpendingTrends;
+
 

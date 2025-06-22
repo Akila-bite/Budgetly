@@ -1,11 +1,11 @@
 import { useSelector } from "react-redux";
 import { useTransactionFilter } from "../context/TransactionFilterContext";
 
-// Utility: format date to yyyy-mm-dd
 const formatDate = (date) => date.toISOString().split("T")[0];
 
 const useTransactionAnalytics = () => {
-  const { items } = useSelector((state) => state.transactions);
+  // Changed here:
+  const { items } = useSelector((state) => state.transaction);  // singular 'transaction'
   const { typeFilter, categoryFilter } = useTransactionFilter();
 
   const filteredTransactions = items.filter((tx) => {
@@ -22,7 +22,6 @@ const useTransactionAnalytics = () => {
     .filter((tx) => tx.type === "expense")
     .reduce((sum, tx) => sum + tx.amount, 0);
 
-  // Category-based spending (bar chart)
   const spendingByCategory = filteredTransactions
     .filter((tx) => tx.type === "expense")
     .reduce((acc, tx) => {
@@ -35,7 +34,6 @@ const useTransactionAnalytics = () => {
     amount: parseFloat(amount.toFixed(2)),
   }));
 
-  // Monthly Spending Trend (e.g. Jan, Feb, Mar)
   const monthlySpending = {};
 
   filteredTransactions.forEach((tx) => {
@@ -51,7 +49,6 @@ const useTransactionAnalytics = () => {
     amount: parseFloat(amount.toFixed(2)),
   }));
 
-  // Weekly Summary (last 7 days)
   const today = new Date();
   const last7Days = [...Array(7)].map((_, i) => {
     const d = new Date(today);
@@ -74,19 +71,17 @@ const useTransactionAnalytics = () => {
     amount: parseFloat((weeklySpendingMap[date] || 0).toFixed(2)),
   }));
 
-  // Simple Prediction for current month
   const currentMonth = today.getMonth();
   const currentYear = today.getFullYear();
 
-  const currentMonthExpenses = filteredTransactions
-    .filter((tx) => {
-      const txDate = new Date(tx.date);
-      return (
-        tx.type === "expense" &&
-        txDate.getMonth() === currentMonth &&
-        txDate.getFullYear() === currentYear
-      );
-    });
+  const currentMonthExpenses = filteredTransactions.filter((tx) => {
+    const txDate = new Date(tx.date);
+    return (
+      tx.type === "expense" &&
+      txDate.getMonth() === currentMonth &&
+      txDate.getFullYear() === currentYear
+    );
+  });
 
   const daysSoFar = today.getDate();
   const currentTotal = currentMonthExpenses.reduce((sum, tx) => sum + tx.amount, 0);
@@ -105,4 +100,5 @@ const useTransactionAnalytics = () => {
 };
 
 export default useTransactionAnalytics;
+
 

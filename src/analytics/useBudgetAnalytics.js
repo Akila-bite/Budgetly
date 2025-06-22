@@ -1,14 +1,14 @@
 import { useSelector } from "react-redux";
 import { useMemo } from "react";
 
-// Optional: filter by selected month/year
 const getMonthYearKey = (date) => {
   const d = new Date(date);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; // e.g. 2025-06
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 };
 
 const useBudgetAnalytics = (selectedMonth = null) => {
-  const transactions = useSelector((state) => state.transactions.transactions);
+  // Changed here:
+  const transactions = useSelector((state) => state.transaction.items); // singular 'transaction' and items array
 
   const monthKey = selectedMonth || getMonthYearKey(new Date());
 
@@ -27,7 +27,6 @@ const useBudgetAnalytics = (selectedMonth = null) => {
       } else if (tx.type === "expense") {
         expenses += tx.amount;
 
-        // Optional: count savings separately if they fall under a saving goal/category
         if (
           tx.category.toLowerCase().includes("save") ||
           tx.category.toLowerCase().includes("goal")
@@ -40,21 +39,12 @@ const useBudgetAnalytics = (selectedMonth = null) => {
     const balance = income - expenses;
     const savingsRate = income > 0 ? (savings / income) * 100 : 0;
 
-    return {
-      income,
-      expenses,
-      savings,
-      balance,
-      savingsRate,
-    };
+    return { income, expenses, savings, balance, savingsRate };
   }, [filteredTx]);
 
-  // Generate month options for a dropdown (if you want a filter UI)
   const availableMonths = useMemo(() => {
-    const monthSet = new Set(
-      transactions.map((tx) => getMonthYearKey(tx.date))
-    );
-    return [...monthSet].sort().reverse(); // Most recent first
+    const monthSet = new Set(transactions.map((tx) => getMonthYearKey(tx.date)));
+    return [...monthSet].sort().reverse();
   }, [transactions]);
 
   return {
@@ -69,3 +59,4 @@ const useBudgetAnalytics = (selectedMonth = null) => {
 };
 
 export default useBudgetAnalytics;
+
