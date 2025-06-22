@@ -1,12 +1,28 @@
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useTransactionFilter } from "../context/TransactionFilterContext";
-import { deleteTransaction } from "../redux/transactionSlice"; 
+import { deleteTransaction, fetchTransactions } from "../redux/transactionSlice";
+import { fetchCategories } from "../redux/categorySlice";
 import "./TransactionList.css";
 
 const TransactionList = ({ onEdit }) => {
-  const items = useSelector((state) => state.transactions?.items || []);
   const dispatch = useDispatch();
+
+  const items = useSelector((state) => state.transactions?.items || []);
+  const categories = useSelector((state) => state.categories || []);
   const { typeFilter, categoryFilter } = useTransactionFilter();
+
+  // ✅ Fetch transactions & categories on mount
+  useEffect(() => {
+    dispatch(fetchTransactions());
+    if (!categories.length) dispatch(fetchCategories());
+  }, [dispatch]);
+
+  // ✅ Helper: Map category ID to name
+  const getCategoryName = (id) => {
+    const match = categories.find((cat) => cat._id === id);
+    return match ? match.name : id; // fallback to ID
+  };
 
   const filtered = items.filter((tx) => {
     const typeMatch = typeFilter === "all" || tx.type === typeFilter;
@@ -39,7 +55,7 @@ const TransactionList = ({ onEdit }) => {
               <td>{new Date(tx.date).toLocaleDateString()}</td>
               <td>{tx.description || "-"}</td>
               <td className={tx.type === "income" ? "income" : "expense"}>{tx.type}</td>
-              <td>{tx.category}</td>
+              <td>{getCategoryName(tx.category)}</td>
               <td>{tx.amount.toFixed(2)}</td>
               <td>
                 <button onClick={() => onEdit(tx)} className="edit-btn">Edit</button>
@@ -49,9 +65,12 @@ const TransactionList = ({ onEdit }) => {
           ))}
         </tbody>
       </table>
+
+      {filtered.length === 0 && <p style={{ textAlign: "center", marginTop: "1rem" }}>No transactions found.</p>}
     </div>
   );
 };
 
 export default TransactionList;
+
 

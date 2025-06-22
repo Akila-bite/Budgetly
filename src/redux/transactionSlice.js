@@ -3,7 +3,25 @@ import axios from "axios";
 
 const API_URL = "https://budgetly-backend-jan0.onrender.com/api/transaction";
 
-// Create transaction
+// ✅ Fetch all transactions
+export const fetchTransactions = createAsyncThunk(
+  "transactions/fetchTransactions",
+  async (_, thunkAPI) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(API_URL, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return res.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "Failed to fetch transactions"
+      );
+    }
+  }
+);
+
+// ✅ Create transaction
 export const createTransaction = createAsyncThunk(
   "transactions/createTransaction",
   async (transactionData, thunkAPI) => {
@@ -21,7 +39,7 @@ export const createTransaction = createAsyncThunk(
   }
 );
 
-// Delete transaction
+// ✅ Delete transaction
 export const deleteTransaction = createAsyncThunk(
   "transactions/deleteTransaction",
   async (transactionId, thunkAPI) => {
@@ -39,9 +57,9 @@ export const deleteTransaction = createAsyncThunk(
   }
 );
 
-// Update transaction
+// ✅ Update transaction
 export const updateTransaction = createAsyncThunk(
-  "transaction/updateTransaction",
+  "transactions/updateTransaction",
   async ({ id, updatedData }, thunkAPI) => {
     try {
       const token = localStorage.getItem("token");
@@ -57,35 +75,45 @@ export const updateTransaction = createAsyncThunk(
   }
 );
 
-// Slice
+// ✅ Slice
 const transactionSlice = createSlice({
-  name: "transaction",
- initialState: {
-  transactions: [],
-  loading: false,
-  error: null,
-  totals: {
-    income: 0,
-    expenses: 0,
-    balance: 0,
+  name: "transactions",
+  initialState: {
+    transactions: [],
+    loading: false,
+    error: null,
+    totals: {
+      income: 0,
+      expenses: 0,
+      balance: 0,
+    },
   },
-},
-
   reducers: {
     resetTransactionState: (state) => {
       state.loading = false;
       state.error = null;
     },
-
-      setTotals: (state, action) => {
-  state.totals = action.payload;
-},
+    setTotals: (state, action) => {
+      state.totals = action.payload;
+    },
   },
-
-
   extraReducers: (builder) => {
     builder
-      // CREATE
+      // 🔄 FETCH
+      .addCase(fetchTransactions.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchTransactions.fulfilled, (state, action) => {
+        state.loading = false;
+        state.transactions = action.payload;
+      })
+      .addCase(fetchTransactions.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // ➕ CREATE
       .addCase(createTransaction.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -99,7 +127,7 @@ const transactionSlice = createSlice({
         state.error = action.payload;
       })
 
-      // DELETE
+      // ❌ DELETE
       .addCase(deleteTransaction.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -115,7 +143,7 @@ const transactionSlice = createSlice({
         state.error = action.payload;
       })
 
-      // UPDATE
+      // ✏️ UPDATE
       .addCase(updateTransaction.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -134,5 +162,14 @@ const transactionSlice = createSlice({
 });
 
 export const { resetTransactionState, setTotals } = transactionSlice.actions;
+
+export {
+  fetchTransactions, 
+  createTransaction,
+  deleteTransaction,
+  updateTransaction,
+};
+
 export default transactionSlice.reducer;
+
 
