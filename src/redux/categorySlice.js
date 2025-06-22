@@ -1,4 +1,3 @@
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -10,18 +9,16 @@ export const fetchCategories = createAsyncThunk(
   async (_, thunkAPI) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      // Early reject if no token
       return thunkAPI.rejectWithValue("No auth token found");
     }
     try {
       const res = await axios.get(API_URL, {
         headers: {
-          Authorization: `Bearer ${token}`, 
+          Authorization: `Bearer ${token}`,
         },
       });
-      return res.data;
+      return res.data; // this is an array
     } catch (err) {
-      // Extract a useful error message
       const message =
         err.response?.data?.message ||
         err.response?.statusText ||
@@ -31,28 +28,43 @@ export const fetchCategories = createAsyncThunk(
   }
 );
 
-
 // Add a new category
 export const createCategory = createAsyncThunk(
   "categories/create",
-  async (categoryData) => {
+  async (categoryData, thunkAPI) => {
     const token = localStorage.getItem("token");
-    const res = await axios.post(API_URL, categoryData, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return res.data;
+    try {
+      const res = await axios.post(API_URL, categoryData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return res.data;
+    } catch (err) {
+      const message =
+        err.response?.data?.message ||
+        err.response?.statusText ||
+        err.message;
+      return thunkAPI.rejectWithValue(message);
+    }
   }
 );
 
 // Delete a category by ID
 export const deleteCategory = createAsyncThunk(
   "categories/delete",
-  async (id) => {
+  async (id, thunkAPI) => {
     const token = localStorage.getItem("token");
-    await axios.delete(`${API_URL}/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return id; // Return the deleted category ID so we can remove it from state
+    try {
+      await axios.delete(`${API_URL}/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return id; // Return the deleted category ID
+    } catch (err) {
+      const message =
+        err.response?.data?.message ||
+        err.response?.statusText ||
+        err.message;
+      return thunkAPI.rejectWithValue(message);
+    }
   }
 );
 
@@ -68,20 +80,17 @@ const categorySlice = createSlice({
     builder
       // FETCH CATEGORIES
       .addCase(fetchCategories.pending, (state) => {
-        state.loading = true;  // Start loading spinner or similar UI
-        state.error = null;    // Clear previous errors
+        state.loading = true;
+        state.error = null;
       })
       .addCase(fetchCategories.fulfilled, (state, action) => {
-  state.loading = false;
-  state.categories = action.payload.categories || []; 
-})
-
-     .addCase(fetchCategories.rejected, (state, action) => {
-  console.error("Category fetch error:", action.error);
-  state.loading = false;
-  state.error = action.payload || action.error.message;
-})
-
+        state.loading = false;
+        state.categories = action.payload || []; // ← fixed here
+      })
+      .addCase(fetchCategories.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload || action.error.message;
+      })
 
       // CREATE CATEGORY
       .addCase(createCategory.pending, (state) => {
@@ -90,11 +99,11 @@ const categorySlice = createSlice({
       })
       .addCase(createCategory.fulfilled, (state, action) => {
         state.loading = false;
-        state.categories.push(action.payload); // Add new category to list
+        state.categories.push(action.payload);
       })
       .addCase(createCategory.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       })
 
       // DELETE CATEGORY
@@ -104,17 +113,17 @@ const categorySlice = createSlice({
       })
       .addCase(deleteCategory.fulfilled, (state, action) => {
         state.loading = false;
-        // Remove category with matching _id from state.categories
         state.categories = state.categories.filter(
           (cat) => cat._id !== action.payload
         );
       })
       .addCase(deleteCategory.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       });
   },
 });
 
 export default categorySlice.reducer;
+
 

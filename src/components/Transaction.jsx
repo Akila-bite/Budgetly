@@ -11,7 +11,7 @@ const Transaction = () => {
   const dispatch = useDispatch();
   const authRequest = useAuthRequest(); // ✅ custom hook
 
-  // Redux state for categories
+  // Redux state for categories 
   const {
     categories,
     loading: catLoading,
