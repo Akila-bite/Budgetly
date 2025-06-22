@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchCategories } from "../redux/categorySlice"; 
+import { fetchCategories } from "../redux/categorySlice";
 import { createTransaction } from "../redux/transactionSlice";
 import { toast } from "react-toastify";
 import MoneyToast from "../components/MoneyToast";
@@ -11,14 +11,13 @@ const Transaction = () => {
   const dispatch = useDispatch();
   const authRequest = useAuthRequest(); // ✅ custom hook
 
-  // Redux state for categories 
+  // Redux state for categories
   const {
     categories,
     loading: catLoading,
     error: catError,
   } = useSelector((state) => state.categories);
 
-  // Fetch categories on mount
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
@@ -26,7 +25,7 @@ const Transaction = () => {
   const [formData, setFormData] = useState({
     amount: "",
     type: "expense",
-    category: "",      // <-- will hold category _id now
+    category: "",
     description: "",
     date: new Date().toISOString().split("T")[0],
   });
@@ -34,7 +33,7 @@ const Transaction = () => {
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
 
-  // Set default category to first category's _id on load
+  // Default category setup
   useEffect(() => {
     if (!catLoading && categories.length && !formData.category) {
       setFormData((prev) => ({
@@ -44,7 +43,7 @@ const Transaction = () => {
     }
   }, [catLoading, categories, formData.category]);
 
-  // Update category when type changes (use first category of matching type)
+  // Change category when type changes
   useEffect(() => {
     if (!catLoading && categories.length) {
       const match = categories.find((c) => c.type === formData.type);
@@ -86,9 +85,8 @@ const Transaction = () => {
       });
   };
 
-  // Add new category
-  const handleAddCategory = async (e) => {
-    e.preventDefault();
+  // ✅ Fix: moved form handler outside nested form
+  const handleAddCategory = async () => {
     const nameTrimmed = newCategoryName.trim();
     if (!nameTrimmed) {
       toast.error(<MoneyToast message="Category name cannot be empty" />);
@@ -110,12 +108,11 @@ const Transaction = () => {
 
       setFormData((prev) => ({
         ...prev,
-        category: createdCat._id, // <-- set category to new category's _id
+        category: createdCat._id,
       }));
 
       setNewCategoryName("");
       setIsAddingCategory(false);
-
       dispatch(fetchCategories());
 
     } catch (err) {
@@ -188,7 +185,7 @@ const Transaction = () => {
                 {categories
                   .filter((c) => c.type === formData.type)
                   .map((cat) => (
-                    <option key={cat._id} value={cat._id}> {/* <-- Use _id as value */}
+                    <option key={cat._id} value={cat._id}>
                       {cat.name}
                     </option>
                   ))}
@@ -197,9 +194,9 @@ const Transaction = () => {
             </div>
           </label>
 
+          {/* ✅ Not a nested form anymore */}
           {isAddingCategory && (
-            <form
-              onSubmit={handleAddCategory}
+            <div
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -215,16 +212,18 @@ const Transaction = () => {
                 autoComplete="off"
                 required
               />
-              <button type="submit">Save Category</button>
+              <button
+                type="button"
+                onClick={handleAddCategory}
+              >
+                Save Category
+              </button>
               <button
                 type="button"
                 onClick={() => {
                   setIsAddingCategory(false);
                   setNewCategoryName("");
-
-                  const match = categories.find(
-                    (c) => c.type === formData.type
-                  );
+                  const match = categories.find((c) => c.type === formData.type);
                   setFormData((prev) => ({
                     ...prev,
                     category: match ? match._id : "",
@@ -233,7 +232,7 @@ const Transaction = () => {
               >
                 Cancel
               </button>
-            </form>
+            </div>
           )}
 
           <label>
@@ -265,6 +264,7 @@ const Transaction = () => {
 };
 
 export default Transaction;
+
 
 
 
