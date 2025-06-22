@@ -93,6 +93,14 @@
 * **Testing Tools:** Postman (for API testing)
 
 ---
+ ## Current Issues
+ * Profile will not update user-preferences
+ * No re-routing to login page when accessing "protected pages", Instead The page loads for long 
+ * No appropriate toggle for filtering transactions
+ *
+
+
+
 
 ## 📁 Upcoming Enhancements
 
