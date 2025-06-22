@@ -10,7 +10,7 @@ import userPreferencesReducer from './userPreferencesSlice';
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    transactions: transactionReducer,
+    transaction: transactionReducer,
     goals: goalsReducer,
     budget: budgetReducer,
     categories: categoryReducer,

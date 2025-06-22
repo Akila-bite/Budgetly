@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const API_URL = "https://budgetly-backend-jan0.onrender.com/api/transactions";
+const API_URL = "https://budgetly-backend-jan0.onrender.com/api/transaction";
 
 // Create transaction
 export const createTransaction = createAsyncThunk(
@@ -41,7 +41,7 @@ export const deleteTransaction = createAsyncThunk(
 
 // Update transaction
 export const updateTransaction = createAsyncThunk(
-  "transactions/updateTransaction",
+  "transaction/updateTransaction",
   async ({ id, updatedData }, thunkAPI) => {
     try {
       const token = localStorage.getItem("token");
@@ -59,7 +59,7 @@ export const updateTransaction = createAsyncThunk(
 
 // Slice
 const transactionSlice = createSlice({
-  name: "transactions",
+  name: "transaction",
  initialState: {
   transactions: [],
   loading: false,
