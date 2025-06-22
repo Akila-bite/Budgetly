@@ -5,8 +5,8 @@ const formatMonthLabel = (date) =>
   date.toLocaleString("default", { month: "short", year: "numeric" });
 
 const useSpendingTrends = () => {
-  // Changed here:
-  const { items: transactions } = useSelector((state) => state.transaction);
+  // Defensive default empty array for transactions
+  const { items: transactions = [] } = useSelector((state) => state.transaction || {});
 
   const data = useMemo(() => {
     const monthlyTotals = {};
@@ -63,5 +63,6 @@ const useSpendingTrends = () => {
 };
 
 export default useSpendingTrends;
+
 
 

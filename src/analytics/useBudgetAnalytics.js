@@ -7,8 +7,8 @@ const getMonthYearKey = (date) => {
 };
 
 const useBudgetAnalytics = (selectedMonth = null) => {
-  // Changed here:
-  const transactions = useSelector((state) => state.transaction.items); // singular 'transaction' and items array
+  // Defensive: default empty array if slice or items missing
+  const transactions = useSelector((state) => state.transaction?.items || []);
 
   const monthKey = selectedMonth || getMonthYearKey(new Date());
 
@@ -59,4 +59,5 @@ const useBudgetAnalytics = (selectedMonth = null) => {
 };
 
 export default useBudgetAnalytics;
+
 

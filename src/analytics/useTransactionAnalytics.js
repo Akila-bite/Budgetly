@@ -4,8 +4,9 @@ import { useTransactionFilter } from "../context/TransactionFilterContext";
 const formatDate = (date) => date.toISOString().split("T")[0];
 
 const useTransactionAnalytics = () => {
-  // Changed here:
-  const { items } = useSelector((state) => state.transaction);  // singular 'transaction'
+  // Defensive: default to empty object if state.transaction is missing,
+  // then default items to empty array to avoid undefined errors.
+  const { items = [] } = useSelector((state) => state.transaction || {});
   const { typeFilter, categoryFilter } = useTransactionFilter();
 
   const filteredTransactions = items.filter((tx) => {
@@ -100,5 +101,6 @@ const useTransactionAnalytics = () => {
 };
 
 export default useTransactionAnalytics;
+
 
 
