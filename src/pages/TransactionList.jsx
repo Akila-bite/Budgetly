@@ -8,22 +8,25 @@ import "./TransactionList.css";
 const TransactionList = ({ onEdit }) => {
   const dispatch = useDispatch();
 
-  const transactions = useSelector((state) => state.transactions || []);
-  const categories = useSelector((state) => state.categories || []);
+  // Access transactions and categories correctly based on your Redux slice keys
+  const { transactions = [] } = useSelector((state) => state.transaction);
+  const { categories = [] } = useSelector((state) => state.categories);
+
   const { typeFilter, categoryFilter } = useTransactionFilter();
 
-  // ✅ Fetch transactions & categories on mount
+  // Fetch transactions and categories on mount
   useEffect(() => {
     dispatch(fetchTransactions());
     if (!categories.length) dispatch(fetchCategories());
-  }, [dispatch]);
+  }, [dispatch, categories.length]);
 
-  // ✅ Helper: Map category ID to name
+  // Map category ID to category name
   const getCategoryName = (id) => {
     const match = categories.find((cat) => cat._id === id);
-    return match ? match.name : id; // fallback to ID
+    return match ? match.name : id; // fallback to ID if not found
   };
 
+  // Filter transactions based on selected filters
   const filtered = transactions.filter((tx) => {
     const typeMatch = typeFilter === "all" || tx.type === typeFilter;
     const categoryMatch = categoryFilter === "all" || tx.category === categoryFilter;
@@ -66,7 +69,9 @@ const TransactionList = ({ onEdit }) => {
         </tbody>
       </table>
 
-      {filtered.length === 0 && <p style={{ textAlign: "center", marginTop: "1rem" }}>No transactions found.</p>}
+      {filtered.length === 0 && (
+        <p style={{ textAlign: "center", marginTop: "1rem" }}>No transactions found.</p>
+      )}
     </div>
   );
 };
