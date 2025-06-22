@@ -26,7 +26,7 @@ const Transaction = () => {
   const [formData, setFormData] = useState({
     amount: "",
     type: "expense",
-    category: "",
+    category: "",      // <-- will hold category _id now
     description: "",
     date: new Date().toISOString().split("T")[0],
   });
@@ -34,21 +34,23 @@ const Transaction = () => {
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
 
+  // Set default category to first category's _id on load
   useEffect(() => {
     if (!catLoading && categories.length && !formData.category) {
       setFormData((prev) => ({
         ...prev,
-        category: categories[0].name,
+        category: categories[0]._id,
       }));
     }
   }, [catLoading, categories, formData.category]);
 
+  // Update category when type changes (use first category of matching type)
   useEffect(() => {
     if (!catLoading && categories.length) {
       const match = categories.find((c) => c.type === formData.type);
       setFormData((prev) => ({
         ...prev,
-        category: match ? match.name : "",
+        category: match ? match._id : "",
       }));
     }
   }, [formData.type, categories, catLoading]);
@@ -84,7 +86,7 @@ const Transaction = () => {
       });
   };
 
-  // ✅ Replaced Redux call with protected API request
+  // Add new category
   const handleAddCategory = async (e) => {
     e.preventDefault();
     const nameTrimmed = newCategoryName.trim();
@@ -108,12 +110,12 @@ const Transaction = () => {
 
       setFormData((prev) => ({
         ...prev,
-        category: createdCat.name,
+        category: createdCat._id, // <-- set category to new category's _id
       }));
 
       setNewCategoryName("");
       setIsAddingCategory(false);
-      // ✅ Optional: update Redux list by dispatching fetchCategories()
+
       dispatch(fetchCategories());
 
     } catch (err) {
@@ -186,7 +188,7 @@ const Transaction = () => {
                 {categories
                   .filter((c) => c.type === formData.type)
                   .map((cat) => (
-                    <option key={cat._id} value={cat.name}>
+                    <option key={cat._id} value={cat._id}> {/* <-- Use _id as value */}
                       {cat.name}
                     </option>
                   ))}
@@ -225,7 +227,7 @@ const Transaction = () => {
                   );
                   setFormData((prev) => ({
                     ...prev,
-                    category: match ? match.name : "",
+                    category: match ? match._id : "",
                   }));
                 }}
               >
@@ -263,6 +265,7 @@ const Transaction = () => {
 };
 
 export default Transaction;
+
 
 
 
