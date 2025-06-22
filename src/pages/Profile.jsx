@@ -18,18 +18,39 @@ const navigate = useNavigate();
 const authRequest = useAuthRequest();
 
 useEffect(() => {
-  const fetchUser = async () => {
-    try {
-      const data = await authRequest({ method: "GET", url: "/users/me" });
-      setUserData(data);
-    } catch (error) {
+  const fetchUserProfile = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
       toast.info("Please log in to access your profile.");
       navigate("/login");
+      return;
+    }
+
+    try {
+      const data = await authRequest({
+        method: "GET",
+        url: "/users/me",
+      });
+
+      setUserData({
+        fullName: data.fullName,
+        email: data.email,
+        incomeBracket: data.incomeBracket || "",
+        currency: data.currency || "ZAR",
+      });
+      setOriginalData(data);
+    } catch (error) {
+      toast.info("Session expired. Please log in.");
+      navigate("/login");
+    } finally {
+      setLoadingProfile(false); // ✅ Always stop loading
     }
   };
 
-  fetchUser();
+  fetchUserProfile();
 }, [authRequest, navigate]);
+
 
 
   const dispatch = useDispatch();
