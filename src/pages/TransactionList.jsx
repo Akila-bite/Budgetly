@@ -8,7 +8,7 @@ import "./TransactionList.css";
 const TransactionList = ({ onEdit }) => {
   const dispatch = useDispatch();
 
-  const items = useSelector((state) => state.transactions?.items || []);
+  const transactions = useSelector((state) => state.transactions || []);
   const categories = useSelector((state) => state.categories || []);
   const { typeFilter, categoryFilter } = useTransactionFilter();
 
@@ -24,7 +24,7 @@ const TransactionList = ({ onEdit }) => {
     return match ? match.name : id; // fallback to ID
   };
 
-  const filtered = items.filter((tx) => {
+  const filtered = transactions.filter((tx) => {
     const typeMatch = typeFilter === "all" || tx.type === typeFilter;
     const categoryMatch = categoryFilter === "all" || tx.category === categoryFilter;
     return typeMatch && categoryMatch;
