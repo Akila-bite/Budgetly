@@ -162,14 +162,6 @@ const transactionSlice = createSlice({
 });
 
 export const { resetTransactionState, setTotals } = transactionSlice.actions;
-
-export {
-  fetchTransactions, 
-  createTransaction,
-  deleteTransaction,
-  updateTransaction,
-};
-
 export default transactionSlice.reducer;
 
 
