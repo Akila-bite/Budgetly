@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setUserType, setBudgetingStyle } from "../redux/userPreferencesSlice";
 import { USER_TYPES, BUDGETING_STYLES } from "../constants/userOptions";
 import { useAuthRequest } from "../constants/useAuthRequest";
-import {fetchCategories,createCategory,deleteCategory} from "../redux/categorySlice";
+import { fetchCategories, createCategory, deleteCategory } from "../redux/categorySlice";
 import { toast } from "react-toastify";
 import MoneyToast from "../components/MoneyToast";
 import { useNavigate } from "react-router-dom";
@@ -13,47 +13,10 @@ import "./Profile.css";
 const API_BASE_URL = "https://budgetly-backend-jan0.onrender.com";
 
 const Profile = () => {
-
-const navigate = useNavigate();
-const authRequest = useAuthRequest();
-
-useEffect(() => {
-  const fetchUserProfile = async () => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      toast.info("Please log in to access your profile.");
-      navigate("/login");
-      return;
-    }
-
-    try {
-      const data = await authRequest({
-        method: "GET",
-        url: "/users/me",
-      });
-
-      setUserData({
-        fullName: data.fullName,
-        email: data.email,
-        incomeBracket: data.incomeBracket || "",
-        currency: data.currency || "ZAR",
-      });
-      setOriginalData(data);
-    } catch (error) {
-      toast.info("Session expired. Please log in.");
-      navigate("/login");
-    } finally {
-      setLoadingProfile(false); // ✅ Always stop loading
-    }
-  };
-
-  fetchUserProfile();
-}, [authRequest, navigate]);
-
-
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const authRequest = useAuthRequest();
+
   const user = useSelector((state) => state.user || {});
   const userType = user.userType || "";
   const budgetingStyle = user.budgetingStyle || "";
@@ -75,38 +38,47 @@ useEffect(() => {
     error: catError,
   } = useSelector((state) => state.categories);
   const [showManageCategories, setShowManageCategories] = useState(false);
-
   const [newCatName, setNewCatName] = useState("");
   const [newCatType, setNewCatType] = useState("expense");
 
-  // Temporary category editing state
   const [editingCatId, setEditingCatId] = useState(null);
   const [editingCatName, setEditingCatName] = useState("");
   const [editingCatType, setEditingCatType] = useState("");
 
+  // ✅ Handle login protection and profile fetching
   useEffect(() => {
     const fetchUserProfile = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        toast.info("Please log in to access your profile.");
+        navigate("/login");
+        return;
+      }
+
       try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get(
-          `${API_BASE_URL}/api/users/me`,
-          token ? { headers: { Authorization: `Bearer ${token}` } } : {}
-        );
-        setUserData({
-          fullName: res.data.fullName,
-          email: res.data.email,
-          incomeBracket: res.data.incomeBracket || "",
-          currency: res.data.currency || "ZAR",
+        const data = await authRequest({
+          method: "GET",
+          url: "/users/me",
         });
-        setOriginalData(res.data);
-      } catch (err) {
-        toast.error("Failed to load profile info.");
+
+        setUserData({
+          fullName: data.fullName,
+          email: data.email,
+          incomeBracket: data.incomeBracket || "",
+          currency: data.currency || "ZAR",
+        });
+        setOriginalData(data);
+      } catch (error) {
+        toast.info("Session expired. Please log in.");
+        navigate("/login");
       } finally {
         setLoadingProfile(false);
       }
     };
+
     fetchUserProfile();
-  }, []);
+  }, [authRequest, navigate]);
 
   useEffect(() => {
     dispatch(fetchCategories());
@@ -115,11 +87,9 @@ useEffect(() => {
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(
-        `${API_BASE_URL}/api/users/${user._id}`,
-        userData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await axios.put(`${API_BASE_URL}/api/users/${user._id}`, userData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       toast.success("Profile updated successfully!");
       setOriginalData(userData);
       setEditMode(false);
@@ -156,12 +126,11 @@ useEffect(() => {
       toast.error(<MoneyToast message="Category name cannot be empty" />);
       return;
     }
+
     dispatch(createCategory({ name: nameTrimmed, type: newCatType }))
       .unwrap()
       .then((createdCat) => {
-        toast.success(
-          <MoneyToast message={`Category "${createdCat.name}" created`} />
-        );
+        toast.success(<MoneyToast message={`Category "${createdCat.name}" created`} />);
         setNewCatName("");
         setNewCatType("expense");
       })
@@ -172,6 +141,7 @@ useEffect(() => {
 
   const handleDeleteCategory = (id) => {
     if (!window.confirm("Delete this category?")) return;
+
     dispatch(deleteCategory(id))
       .unwrap()
       .then(() => {
@@ -204,6 +174,7 @@ useEffect(() => {
     setEditingCatId(null);
   };
 
+  // ✅ Show loading while checking auth
   if (loadingProfile) return <p className="profile-loading">Loading profile...</p>;
 
   return (
@@ -212,19 +183,14 @@ useEffect(() => {
       <div className="overlay"></div>
       <div className="profile-container">
         <h2 className="profile-heading">Your Profile</h2>
+
         <div className="profile-edit-toggle">
           {!editMode ? (
-            <button onClick={() => setEditMode(true)} className="profile-button primary">
-              Edit Profile
-            </button>
+            <button onClick={() => setEditMode(true)} className="profile-button primary">Edit Profile</button>
           ) : (
             <>
-              <button onClick={handleSave} className="profile-button primary">
-                Save
-              </button>
-              <button onClick={handleCancel} className="profile-button secondary">
-                Cancel
-              </button>
+              <button onClick={handleSave} className="profile-button primary">Save</button>
+              <button onClick={handleCancel} className="profile-button secondary">Cancel</button>
             </>
           )}
         </div>
@@ -248,24 +214,17 @@ useEffect(() => {
           readOnly={!editMode}
         />
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handlePasswordChange();
-          }}
-        >
+        <form onSubmit={(e) => { e.preventDefault(); handlePasswordChange(); }}>
           <label className="profile-label">Change Password</label>
           <input
             type="password"
-            value={password || ""}
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="profile-input"
             placeholder="Enter new password"
             autoComplete="current-password"
           />
-          <button type="submit" className="profile-button secondary">
-            Change Password
-          </button>
+          <button type="submit" className="profile-button secondary">Change Password</button>
         </form>
 
         <label className="profile-label">Income Bracket</label>
@@ -297,9 +256,7 @@ useEffect(() => {
           disabled={!editMode}
         >
           {USER_TYPES.map((type) => (
-            <option key={type} value={type}>
-              {type}
-            </option>
+            <option key={type} value={type}>{type}</option>
           ))}
         </select>
 
@@ -311,9 +268,7 @@ useEffect(() => {
           disabled={!editMode}
         >
           {BUDGETING_STYLES.map((style) => (
-            <option key={style} value={style}>
-              {style}
-            </option>
+            <option key={style} value={style}>{style}</option>
           ))}
         </select>
 
@@ -329,15 +284,7 @@ useEffect(() => {
         {showManageCategories && (
           <div className="manage-categories-section" style={{ marginTop: "1rem" }}>
             <h3>Manage Categories</h3>
-            <form
-              onSubmit={handleAddCategory}
-              style={{
-                display: "flex",
-                gap: "0.5rem",
-                alignItems: "center",
-                marginBottom: "1rem",
-              }}
-            >
+            <form onSubmit={handleAddCategory} style={{ display: "flex", gap: "0.5rem", alignItems: "center", marginBottom: "1rem" }}>
               <input
                 type="text"
                 placeholder="New category name"
@@ -355,10 +302,9 @@ useEffect(() => {
                 <option value="expense">Expense</option>
                 <option value="income">Income</option>
               </select>
-              <button type="submit" className="profile-button primary">
-                Add Category
-              </button>
+              <button type="submit" className="profile-button primary">Add Category</button>
             </form>
+
             {catLoading && <p>Loading categories...</p>}
             {catError && <p style={{ color: "red" }}>Error: {catError}</p>}
 
@@ -403,12 +349,8 @@ useEffect(() => {
                       <td style={{ display: "flex", gap: "0.5rem" }}>
                         {editingCatId === cat._id ? (
                           <>
-                            <button onClick={handleEditCategory} className="profile-button primary">
-                              Save
-                            </button>
-                            <button onClick={cancelEditingCategory} className="profile-button secondary">
-                              Cancel
-                            </button>
+                            <button onClick={handleEditCategory} className="profile-button primary">Save</button>
+                            <button onClick={cancelEditingCategory} className="profile-button secondary">Cancel</button>
                           </>
                         ) : (
                           <>
@@ -442,6 +384,7 @@ useEffect(() => {
 };
 
 export default Profile;
+
 
 
 
