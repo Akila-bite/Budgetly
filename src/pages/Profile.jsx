@@ -7,21 +7,30 @@ import { useAuthRequest } from "../constants/useAuthRequest";
 import {fetchCategories,createCategory,deleteCategory} from "../redux/categorySlice";
 import { toast } from "react-toastify";
 import MoneyToast from "../components/MoneyToast";
+import { useNavigate } from "react-router-dom";
 import "./Profile.css";
 
 const API_BASE_URL = "https://budgetly-backend-jan0.onrender.com";
 
 const Profile = () => {
-  const authRequest = useAuthRequest();
 
-  useEffect(() => {
-    const fetchUser = async () => {
+const navigate = useNavigate();
+const authRequest = useAuthRequest();
+
+useEffect(() => {
+  const fetchUser = async () => {
+    try {
       const data = await authRequest({ method: "GET", url: "/users/me" });
       setUserData(data);
-    };
+    } catch (error) {
+      toast.info("Please log in to access your profile.");
+      navigate("/login");
+    }
+  };
 
-    fetchUser();
-  }, [authRequest]);
+  fetchUser();
+}, [authRequest, navigate]);
+
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user || {});
