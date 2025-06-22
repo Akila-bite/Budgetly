@@ -72,13 +72,16 @@ const categorySlice = createSlice({
         state.error = null;    // Clear previous errors
       })
       .addCase(fetchCategories.fulfilled, (state, action) => {
-        state.loading = false;
-        state.categories = action.payload; // Set categories from response
-      })
-      .addCase(fetchCategories.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.error.message; // Store error message
-      })
+  state.loading = false;
+  state.categories = action.payload.categories || []; 
+})
+
+     .addCase(fetchCategories.rejected, (state, action) => {
+  console.error("Category fetch error:", action.error);
+  state.loading = false;
+  state.error = action.payload || action.error.message;
+})
+
 
       // CREATE CATEGORY
       .addCase(createCategory.pending, (state) => {

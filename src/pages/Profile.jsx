@@ -277,13 +277,8 @@ const Profile = () => {
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(
-        "/api/users/update", // adjust endpoint
-        userData,
-        token
-          ? { headers: { Authorization: `Bearer ${token}` } }
-          : {}
-      );
+     await axios.put(`/api/users/${user._id}`, userData, { headers: { Authorization: `Bearer ${token}` } });
+
       toast.success("Profile updated successfully!");
       setOriginalData(userData);
       setEditMode(false);
