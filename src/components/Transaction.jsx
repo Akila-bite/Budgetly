@@ -1,17 +1,15 @@
-
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  fetchCategories,
-  createCategory,
-} from "../redux/categorySlice"; // adjust path if needed
+import { fetchCategories } from "../redux/categorySlice"; 
 import { createTransaction } from "../redux/transactionSlice";
 import { toast } from "react-toastify";
 import MoneyToast from "../components/MoneyToast";
+import { useAuthRequest } from "../constants/useAuthRequest";
 import "./Transaction.css";
 
 const Transaction = () => {
   const dispatch = useDispatch();
+  const authRequest = useAuthRequest(); // ✅ custom hook
 
   // Redux state for categories
   const {
@@ -25,20 +23,17 @@ const Transaction = () => {
     dispatch(fetchCategories());
   }, [dispatch]);
 
-  // Local state for form data
   const [formData, setFormData] = useState({
     amount: "",
     type: "expense",
-    category: "", // will be set once categories load
+    category: "",
     description: "",
     date: new Date().toISOString().split("T")[0],
   });
 
-  // State to control “adding category” UI
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
 
-  // Once categories load, default category to first if not set
   useEffect(() => {
     if (!catLoading && categories.length && !formData.category) {
       setFormData((prev) => ({
@@ -48,22 +43,16 @@ const Transaction = () => {
     }
   }, [catLoading, categories, formData.category]);
 
-  // When transaction type changes, if user is adding a category, or if current category doesn't match type?
-  // Optionally: when `type` changes, reset category/default to first matching:
   useEffect(() => {
     if (!catLoading && categories.length) {
-      // Try to pick first category matching the new type
       const match = categories.find((c) => c.type === formData.type);
-      if (match) {
-        setFormData((prev) => ({ ...prev, category: match.name }));
-      } else {
-        // No matching category exists: clear or keep previous? We'll keep empty so user can add new
-        setFormData((prev) => ({ ...prev, category: "" }));
-      }
+      setFormData((prev) => ({
+        ...prev,
+        category: match ? match.name : "",
+      }));
     }
   }, [formData.type, categories, catLoading]);
 
-  // Handle input changes for transaction fields
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -72,19 +61,17 @@ const Transaction = () => {
     }));
   };
 
-  // Handle submission of transaction
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Basic guard: ensure category is set
     if (!formData.category) {
       toast.error(<MoneyToast message="Please select or create a category" />);
       return;
     }
+
     dispatch(createTransaction(formData))
       .unwrap()
       .then(() => {
         toast.success(<MoneyToast message="Transaction recorded!" />);
-        // Reset only amount, description, date. Keep type & category to speed up repeated entries
         setFormData((prev) => ({
           ...prev,
           amount: "",
@@ -97,35 +84,45 @@ const Transaction = () => {
       });
   };
 
-  // Handle submission of new category
-  const handleAddCategory = (e) => {
+  // ✅ Replaced Redux call with protected API request
+  const handleAddCategory = async (e) => {
     e.preventDefault();
     const nameTrimmed = newCategoryName.trim();
     if (!nameTrimmed) {
       toast.error(<MoneyToast message="Category name cannot be empty" />);
       return;
     }
-    // Determine type for new category: match transaction type
-    const type = formData.type; // "expense" or "income"
-    dispatch(createCategory({ name: nameTrimmed, type }))
-      .unwrap()
-      .then((createdCat) => {
-        toast.success(
-          <MoneyToast message={`Category "${createdCat.name}" created`} />
-        );
-        // Set formData.category to new category
-        setFormData((prev) => ({
-          ...prev,
-          category: createdCat.name,
-        }));
-        // Reset newCategoryName and close the add UI
-        setNewCategoryName("");
-        setIsAddingCategory(false);
-        // Optionally: no need to refetch, since slice already pushed new category
-      })
-      .catch((errMsg) => {
-        toast.error(<MoneyToast message={`Error: ${errMsg}`} />);
+
+    const type = formData.type;
+
+    try {
+      const createdCat = await authRequest({
+        method: "POST",
+        url: "/categories",
+        data: { name: nameTrimmed, type },
       });
+
+      toast.success(
+        <MoneyToast message={`Category "${createdCat.name}" created`} />
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+        category: createdCat.name,
+      }));
+
+      setNewCategoryName("");
+      setIsAddingCategory(false);
+      // ✅ Optional: update Redux list by dispatching fetchCategories()
+      dispatch(fetchCategories());
+
+    } catch (err) {
+      toast.error(
+        <MoneyToast
+          message={`Error: ${err?.response?.data?.message || "Failed to create category"}`}
+        />
+      );
+    }
   };
 
   if (catLoading) return <p>Loading categories...</p>;
@@ -172,7 +169,6 @@ const Transaction = () => {
                 onChange={(e) => {
                   const val = e.target.value;
                   if (val === "__new") {
-                    // User chose to add a new category
                     setIsAddingCategory(true);
                   } else {
                     setFormData((prev) => ({ ...prev, category: val }));
@@ -182,27 +178,23 @@ const Transaction = () => {
                 required={!isAddingCategory}
                 style={{ flexGrow: 1 }}
               >
-                {/* If formData.category might be empty string, include a placeholder */}
                 {!isAddingCategory && !formData.category && (
                   <option value="" disabled>
                     Select category
                   </option>
                 )}
                 {categories
-                  .filter((c) => c.type === formData.type) // only show categories matching transaction type
+                  .filter((c) => c.type === formData.type)
                   .map((cat) => (
                     <option key={cat._id} value={cat.name}>
                       {cat.name}
                     </option>
                   ))}
-                {/* Option to add new */}
                 <option value="__new">+ Add new category</option>
               </select>
-              {/* Optionally, a button to trigger add too */}
             </div>
           </label>
 
-          {/* If adding a new category, show input & button */}
           {isAddingCategory && (
             <form
               onSubmit={handleAddCategory}
@@ -227,19 +219,14 @@ const Transaction = () => {
                 onClick={() => {
                   setIsAddingCategory(false);
                   setNewCategoryName("");
-                  // reset category selection if none selected
-                  if (categories.length) {
-                    // pick first available matching type
-                    const match = categories.find(
-                      (c) => c.type === formData.type
-                    );
-                    setFormData((prev) => ({
-                      ...prev,
-                      category: match ? match.name : "",
-                    }));
-                  } else {
-                    setFormData((prev) => ({ ...prev, category: "" }));
-                  }
+
+                  const match = categories.find(
+                    (c) => c.type === formData.type
+                  );
+                  setFormData((prev) => ({
+                    ...prev,
+                    category: match ? match.name : "",
+                  }));
                 }}
               >
                 Cancel
@@ -276,5 +263,6 @@ const Transaction = () => {
 };
 
 export default Transaction;
+
 
 

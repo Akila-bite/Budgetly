@@ -3,11 +3,8 @@ import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { setUserType, setBudgetingStyle } from "../redux/userPreferencesSlice";
 import { USER_TYPES, BUDGETING_STYLES } from "../constants/userOptions";
-import {
-  fetchCategories,
-  createCategory,
-  deleteCategory,
-} from "../redux/categorySlice";
+import { useAuthRequest } from "../constants/useAuthRequest";
+import {fetchCategories,createCategory,deleteCategory} from "../redux/categorySlice";
 import { toast } from "react-toastify";
 import MoneyToast from "../components/MoneyToast";
 import "./Profile.css";
@@ -15,6 +12,17 @@ import "./Profile.css";
 const API_BASE_URL = "https://budgetly-backend-jan0.onrender.com";
 
 const Profile = () => {
+  const authRequest = useAuthRequest();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const data = await authRequest({ method: "GET", url: "/users/me" });
+      setUserData(data);
+    };
+
+    fetchUser();
+  }, [authRequest]);
+
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user || {});
   const userType = user.userType || "";
