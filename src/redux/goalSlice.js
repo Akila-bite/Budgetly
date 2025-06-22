@@ -4,25 +4,67 @@ import axios from "axios";
 const API_URL = "https://budgetly-backend-jan0.onrender.com/api/goals";
 
 // Thunks
-export const fetchGoals = createAsyncThunk("goals/fetch", async () => {
-  const res = await axios.get(API_URL);
-  return res.data;
+export const fetchGoals = createAsyncThunk("goals/fetch", async (_, thunkAPI) => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.get("https://budgetly-backend-jan0.onrender.com/api/goals", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message || "Failed to fetch goals"
+    );
+  }
 });
 
-export const createGoal = createAsyncThunk("goals/create", async (goalData) => {
-  const res = await axios.post(API_URL, goalData);
-  return res.data;
+export const createGoal = createAsyncThunk("goals/create", async (goalData, thunkAPI) => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.post("https://budgetly-backend-jan0.onrender.com/api/goals", goalData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message || "Failed to create goal"
+    );
+  }
 });
 
-export const updateGoal = createAsyncThunk("goals/update", async ({ id, data }) => {
-  const res = await axios.put(`${API_URL}/${id}`, data);
-  return res.data;
+export const updateGoal = createAsyncThunk("goals/update", async ({ id, data }, thunkAPI) => {
+  try {
+    const token = localStorage.getItem("token");
+    const res = await axios.put(`https://budgetly-backend-jan0.onrender.com/api/goals/${id}`, data, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message || "Failed to update goal"
+    );
+  }
 });
 
-export const deleteGoal = createAsyncThunk("goals/delete", async (id) => {
-  await axios.delete(`${API_URL}/${id}`);
-  return id; // return the id so we can remove it from local state
+export const deleteGoal = createAsyncThunk("goals/delete", async (id, thunkAPI) => {
+  try {
+    const token = localStorage.getItem("token");
+    await axios.delete(`https://budgetly-backend-jan0.onrender.com/api/goals/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return id;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(
+      error.response?.data?.message || "Failed to delete goal"
+    );
+  }
 });
+
+
+
+
+
+
 
 const goalSlice = createSlice({
   name: "goals",
